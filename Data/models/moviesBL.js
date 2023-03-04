@@ -1,5 +1,11 @@
 const restDAL = require("../DAL/rest");
 
+// get all movies from DB
+const showAll = async function () {
+  const resp = await restDAL.getData();
+  return resp[0];
+};
+
 // add movie to DB
 const addMovie = async function (movie) {
   // if update movie
@@ -13,8 +19,8 @@ const addMovie = async function (movie) {
 
   if (!movie.id) {
     // if new movie
-    let data = await restDAL.getData();
-    data = data[0].map((movies) => movies._id);
+    let data = await showAll();
+    data = data.map((movies) => movies._id);
     data = Math.max(...data); // get the last id
     obj._id = data + 1;
   }
@@ -22,16 +28,10 @@ const addMovie = async function (movie) {
   await restDAL.postMovies(obj);
 };
 
-// get all movies from DB
-const showAll = async function () {
-  const resp = await restDAL.getData();
-  return resp[0];
-};
-
 // search movies in DB
 const search = async function (obj) {
-  const resp = await restDAL.getData();
-  const names = resp[0].map((data) => data.Name);
+  const resp = await showAll();
+  const names = resp.map((data) => data.Name);
   const movies = [];
 
   //check all letters

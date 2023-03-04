@@ -18,8 +18,8 @@ const addMember = async function (member) {
 
   // if new member
   if (!member.id) {
-    let data = await restDAL.getData();
-    data = data[1].map((members) => members._id);
+    let data = await showAll();
+    data = data.map((members) => members._id);
     data = Math.max(...data); // get the last id
     obj._id = data + 1;
   }

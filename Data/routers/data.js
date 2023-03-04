@@ -11,20 +11,21 @@ const subsBL = require("../models/subsBL");
 const membersBL = require("../models/membersBL");
 const restDAL = require("../DAL/rest");
 
+async function returnData() {
+  const data = await restDAL.getData();
+  return data;
+}
+
 router.route("/").get(async function (req, resp) {
-  const array = await restDAL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 //main page
 router.route("/main").post(async function (req, resp) {
-  const check = await loginBL.check(req.body); // check authentication
+  const authentication = await loginBL.check(req.body);
 
-  if (check == 1) {
-    // if user authenticated
+  if (authentication) {
     const time = Date.now();
-
-    //get all data of logged user
     const user = await dbBL.findUser(req.body.user);
     let perm = await permBL.getPermissions();
     const users = await usersBL.getUsers();
@@ -41,9 +42,7 @@ router.route("/main").post(async function (req, resp) {
       time,
       timeOut,
     });
-  }
-  if (check == 0) {
-    // if not authenticated
+  } else {
     return resp.json("THE USERNAME OR PASSWORD IS INCORRECT!!");
   }
 });
@@ -67,8 +66,7 @@ router.route("/create").post(async function (req, resp) {
       // check if user already created and has a password
       return resp.json("THIS USER ALREADY HAS PASSWORD!!");
     } else {
-      const array = await restDAL.getData();
-      return resp.json(array);
+      return resp.json(await returnData());
     }
   }
 });
@@ -81,12 +79,10 @@ router.route("/users").get(async function (req, resp) {
 
 // add user
 router.route("/addUser").post(async function (req, resp) {
-  let data = await usersBL.saveUser(req.body);
+  const data = await usersBL.saveUser(req.body);
   await permBL.savePermissions(data, req.body);
   await dbBL.saveUserName(req.body.Uname, data);
-
-  data = await restDAL.getData();
-  return resp.json(data);
+  return resp.json(await returnData());
 });
 
 // get data of specific user
@@ -98,9 +94,7 @@ router.route("/editUser/:id").get(async function (req, resp) {
 // update user
 router.route("/updateUser").post(async function (req, resp) {
   await funcBL.update(req.body);
-
-  const array = await restDAL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 // delete user
@@ -108,9 +102,7 @@ router.route("/deleteUser/:id").delete(async function (req, resp) {
   await dbBL.deleteUserName(req.params.id);
   await usersBL.deleteUser(req.params.id);
   await permBL.deletePermissions(req.params.id);
-
-  const array = await restDAL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 // get all search data
@@ -147,9 +139,7 @@ router.route("/movies/:id").get(async function (req, resp) {
 // add movie
 router.route("/addMovie").post(async function (req, resp) {
   await moviesBL.addMovie(req.body);
-
-  const array = await restDAL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 // get data of specific movie
@@ -162,18 +152,14 @@ router.route("/editMovie/:id").get(async function (req, resp) {
 // update movie
 router.route("/updateMovie").post(async function (req, resp) {
   await moviesBL.saveUpdate(req.body);
-
-  const array = await restDAL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 // delete movie
 router.route("/deleteMovie/:id").delete(async function (req, resp) {
   await moviesBL.deleteMovie(req.params.id);
   await subsBL.deleteSubs(1, req.params.id);
-
-  const array = await restDAL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 // get data of specific subscription
@@ -197,9 +183,7 @@ router.route("/subscriptions/:id").get(async function (req, resp) {
 // add member
 router.route("/addMember").post(async function (req, resp) {
   await membersBL.addMember(req.body);
-
-  const array = await restDAL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 // get data of specific member
@@ -211,26 +195,20 @@ router.route("/editMember/:id").get(async function (req, resp) {
 // update member
 router.route("/updateMember").post(async function (req, resp) {
   await membersBL.saveUpdate(req.body);
-
-  const array = await restDAL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 // delete member
 router.route("/deleteMember/:id").delete(async function (req, resp) {
   await membersBL.deleteMember(req.params.id);
   await subsBL.deleteSubs(2, req.params.id);
-
-  const array = await restDAL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 // assign specific movie to specific member
 router.route("/addSubs").post(async function (req, resp) {
   await subsBL.checkMovie(req.body);
-
-  const array = await restDAL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 module.exports = router;

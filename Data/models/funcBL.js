@@ -5,7 +5,7 @@ const usersBL = require("./usersBL");
 // update user in DB
 const update = async function (obj) {
   const id = Number(obj.id);
-  let nameData = await dbBL.findAllUsers();
+  let nameData = await dbBL.getUsers();
   nameData = nameData.find((data) => data._id == id);
 
   const newUser = {
@@ -26,7 +26,7 @@ const update = async function (obj) {
   // if this user in DB has already password
   if (nameData.Password) {
     nameData = { user: obj.Uname, psw: nameData.Password };
-    await dbBL.findAllUsers();
+    await dbBL.getUsers();
     await dbBL.savePassword(nameData);
   }
 };
@@ -35,7 +35,7 @@ const update = async function (obj) {
 const edit = async function (id) {
   let user = await usersBL.getUsers();
   let permData = await permBL.getPermissions();
-  let nameData = await dbBL.findAllUsers();
+  let nameData = await dbBL.getUsers();
 
   user = user.find((data) => data.id == id);
   permData = permData.find((data) => data.id == id);
@@ -58,7 +58,7 @@ const edit = async function (id) {
 const getAll = async function () {
   const users = await usersBL.getUsers();
   const perm = await permBL.getPermissions();
-  const userName = await dbBL.findAllUsers();
+  const userName = await dbBL.getUsers();
   const arr = [];
 
   // get all user data in order

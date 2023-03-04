@@ -1,9 +1,9 @@
 const UsersModel = require("../DAL/usersModel");
 
-// get user from DB by name
-const findUser = function (name) {
+// get all users from DB
+const getUsers = function () {
   return new Promise((resolve, reject) => {
-    UsersModel.find({ UserName: name }, function (err, data) {
+    UsersModel.find({}, function (err, data) {
       if (err) {
         reject(err);
       } else {
@@ -13,10 +13,10 @@ const findUser = function (name) {
   });
 };
 
-// get all users from DB
-const findAllUsers = function () {
+// get user from DB by name
+const findUser = function (name) {
   return new Promise((resolve, reject) => {
-    UsersModel.find({}, function (err, data) {
+    UsersModel.find({ UserName: name }, function (err, data) {
       if (err) {
         reject(err);
       } else {
@@ -78,8 +78,8 @@ const deleteUserName = function (id) {
 };
 
 module.exports = {
+  getUsers,
   findUser,
-  findAllUsers,
   savePassword,
   saveUserName,
   deleteUserName,

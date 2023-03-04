@@ -2,13 +2,13 @@ const jsonDAL = require("../DAL/json");
 
 //get all users from file
 const getUsers = async function () {
-  const users = await jsonDAL.getUsers();
+  const users = await jsonDAL.read("users");
   return users;
 };
 
 //save user to file
 const saveUser = async function (obj) {
-  const user = await jsonDAL.getUsers();
+  const user = await getUsers();
   const session = Number(obj.session);
 
   // if user already exist and has a creation date
@@ -24,16 +24,16 @@ const saveUser = async function (obj) {
   };
 
   user.push(data);
-  await jsonDAL.saveUsers(user);
+  await jsonDAL.write(user, "users");
 
   return data.id;
 };
 
 //delete user from file
 const deleteUser = async function (id) {
-  let user = await jsonDAL.getUsers();
+  let user = await getUsers();
   user = user.filter((data) => data.id != id);
-  await jsonDAL.saveUsers(user);
+  await jsonDAL.write(user, "users");
 };
 
 module.exports = { getUsers, saveUser, deleteUser };

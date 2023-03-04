@@ -2,13 +2,13 @@ const jsonDAL = require("../DAL/json");
 
 // get all permissions from file
 const getPermissions = async function () {
-  const perm = await jsonDAL.getPermissions();
+  const perm = await jsonDAL.read("permissions");
   return perm;
 };
 
 // save permissions to file
 const savePermissions = async function (id, obj) {
-  const perm = await jsonDAL.getPermissions();
+  const perm = await getPermissions();
   const data = [];
 
   if ((obj.perm && obj.perm.includes("View Subscriptions")) || obj.VS) {
@@ -37,14 +37,14 @@ const savePermissions = async function (id, obj) {
   }
 
   perm.push({ id, permissions: data });
-  await jsonDAL.savePermissions(perm);
+  await jsonDAL.write(perm, "permissions");
 };
 
 // delete permissions from file
 const deletePermissions = async function (id) {
-  let perm = await jsonDAL.getPermissions();
+  let perm = await getPermissions();
   perm = perm.filter((data) => data.id != id);
-  await jsonDAL.savePermissions(perm);
+  await jsonDAL.write(perm, "permissions");
 };
 
 module.exports = { getPermissions, savePermissions, deletePermissions };

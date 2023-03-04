@@ -24,7 +24,7 @@ export default function Main(props) {
   );
 }
 
-function Button(props) {
+export function Button(props) {
   return (
     <Link to={props.link}>
       <button onClick={props.onClick}>{props.text}</button>

@@ -4,9 +4,9 @@ import axios from "axios";
 
 export default function EditUser() {
   const navigate = useNavigate();
-
   const params = useParams();
-
+  const [name, setName] = useState("");
+  const [perm, setPerm] = useState([]);
   const [user, setUser] = useState({
     date: "",
     Fname: "",
@@ -15,86 +15,53 @@ export default function EditUser() {
     session: 0,
     Uname: "",
   });
-  const [name, setName] = useState("");
-  const [perm, setPerm] = useState([]);
 
-  useEffect(async () => {
-    let resp = await axios.get(
-      `${process.env.REACT_APP_API_SERVER}/editUser/${params.id}`
-    );
+  useEffect(() => {
+    const editUser = async () => {
+      const resp = await axios.get(
+        `${process.env.REACT_APP_API_SERVER}/editUser/${params.id}`
+      );
 
-    setName(resp.data.firstName + " " + resp.data.lastName);
+      setName(`${resp.data.firstName} ${resp.data.lastName}`);
+      setPerm(resp.data.perm);
+      setUser({
+        date: resp.data.date,
+        Fname: resp.data.firstName,
+        id: resp.data.id,
+        Lname: resp.data.lastName,
+        session: resp.data.session,
+        Uname: resp.data.user,
+      });
+    };
 
-    setPerm(resp.data.perm);
-
-    setUser({
-      date: resp.data.date,
-      Fname: resp.data.firstName,
-      id: resp.data.id,
-      Lname: resp.data.lastName,
-      session: resp.data.session,
-      Uname: resp.data.user,
-    });
+    editUser();
   }, []);
 
-  const checkSubs = (
-    e //check if 'View Subscriptions' off
-  ) => {
-    if (document.getElementById(e.target.id).checked == true) {
-      if (!perm.includes("View Subscriptions"))
-        setPerm([...perm, e.target.name, "View Subscriptions"]);
-      else setPerm([...perm, e.target.name]);
-    } else {
-      let arr = perm.filter((x) => x != e.target.name);
+  //check if main checkbox off
+  const checkClicks = (e, label) => {
+    const string = label.includes("Movies") ? "Movies" : "Subscriptions";
 
+    if (!e.target.checked) {
+      const arr = perm.filter((data) => data != label);
       setPerm(arr);
+    } else {
+      if (!perm.includes(`View ${string}`)) {
+        setPerm([...perm, label, `View ${string}`]);
+      } else {
+        setPerm([...perm, label]);
+      }
     }
   };
 
-  const checkMovies = (
-    e //check if 'View Movies' off
-  ) => {
-    if (document.getElementById(e.target.id).checked == true) {
-      if (!perm.includes("View Movies"))
-        setPerm([...perm, e.target.name, "View Movies"]);
-      else setPerm([...perm, e.target.name]);
-    } else {
-      let arr = perm.filter((x) => x != e.target.name);
-
-      setPerm(arr);
-    }
+  //check if main checkbox on
+  const clearCheckboxes = (e, label) => {
+    const string = label.includes("Movies") ? "Movies" : "Subscriptions";
+    const arr = perm.filter((data) => !data.includes(string));
+    setPerm(arr);
   };
 
-  const clearSubs = () =>
-    //check if 'View Subscriptions' on
-    {
-      let arr = perm.filter(
-        (x) =>
-          x != "View Subscriptions" &&
-          x != "Create Subscriptions" &&
-          x != "Update Subscriptions" &&
-          x != "Delete Subscriptions"
-      );
-
-      setPerm(arr);
-    };
-
-  const clearMovies = () =>
-    //check if 'View Movies' on
-    {
-      let arr = perm.filter(
-        (x) =>
-          x != "View Movies" &&
-          x != "Create Movies" &&
-          x != "Update Movies" &&
-          x != "Delete Movies"
-      );
-
-      setPerm(arr);
-    };
-
-  const send = async (x) => {
-    if (x == 1) {
+  const send = async (method) => {
+    if (method) {
       if (
         user.Fname != "" &&
         user.Lname != "" &&
@@ -102,213 +69,120 @@ export default function EditUser() {
         user.session != 0
       ) {
         let obj = user;
-
         obj = { ...obj, perm };
-
         await axios.post(`${process.env.REACT_APP_API_SERVER}/updateUser`, obj);
 
         navigate("/main/manageUsers");
-      } else alert("YOU MUST FILL ALL THE FORM!!");
+      } else {
+        alert("YOU MUST FILL ALL THE FORM!!");
+      }
+    } else {
+      navigate("/main/manageUsers");
     }
-
-    if (x == 2) navigate("/main/manageUsers");
   };
 
+  const inputs = [
+    {
+      text: "First Name",
+      onChange: "Fname",
+    },
+    {
+      text: "Last Name",
+      onChange: "Lname",
+    },
+    {
+      text: "User Name",
+      onChange: "Uname",
+    },
+    {
+      text: "Session Timeout (Minutes)",
+      onChange: "session",
+      type: "number",
+      min: 1,
+      style: "50px",
+    },
+  ];
+
+  const checkboxes = [
+    {
+      onClick: clearCheckboxes,
+      text: "View Subscriptions",
+    },
+    {
+      onClick: checkClicks,
+      text: "Create Subscriptions",
+    },
+    {
+      onClick: checkClicks,
+      text: "Update Subscriptions",
+    },
+    {
+      onClick: checkClicks,
+      text: "Delete Subscriptions",
+    },
+    {
+      onClick: clearCheckboxes,
+      text: "View Movies",
+    },
+    {
+      onClick: checkClicks,
+      text: "Create Movies",
+    },
+    {
+      onClick: checkClicks,
+      text: "Update Movies",
+    },
+    {
+      onClick: checkClicks,
+      text: "Delete Movies",
+    },
+  ];
+
   return (
-    <div style={{ textAlign: "center" }}>
+    <div className="flex">
       <h2>Edit User Page: {name}</h2>
 
-      <div className="box">
-        <br />
-        <b>First Name:</b>{" "}
-        <input
-          type="text"
-          name="Fname"
-          value={user.Fname}
-          onChange={(e) => setUser({ ...user, Fname: e.target.value })}
-        />{" "}
-        <br />
-        <b>Last Name:</b>{" "}
-        <input
-          type="text"
-          name="Lname"
-          value={user.Lname}
-          onChange={(e) => setUser({ ...user, Lname: e.target.value })}
-        />{" "}
-        <br />
-        <b>User Name:</b>{" "}
-        <input
-          type="text"
-          name="Uname"
-          value={user.Uname}
-          onChange={(e) => setUser({ ...user, Uname: e.target.value })}
-        />{" "}
-        <br />
-        <b>Session Timeout (Minutes):</b>{" "}
-        <input
-          style={{ width: "50px" }}
-          type="number"
-          name="session"
-          value={user.session}
-          min="1"
-          onChange={(e) => setUser({ ...user, session: e.target.value })}
-        />{" "}
-        <br />
-        <b>Created Date:</b> {user.date} <br />
-        <br />
-        <b>Permissions:</b> <br />
-        {perm.includes("View Subscriptions") ? (
-          <input
-            type="checkbox"
-            name="View Subscriptions"
-            id="ID1"
-            onClick={clearSubs}
-            checked
-          />
-        ) : (
-          <input
-            type="checkbox"
-            name="View Subscriptions"
-            id="ID1"
-            onClick={clearSubs}
-          />
-        )}{" "}
-        View Subscriptions
-        <br />
-        {perm.includes("Create Subscriptions") ? (
-          <input
-            type="checkbox"
-            name="Create Subscriptions"
-            id="ID3"
-            onClick={(e) => checkSubs(e)}
-            checked
-          />
-        ) : (
-          <input
-            type="checkbox"
-            name="Create Subscriptions"
-            id="ID3"
-            onClick={(e) => checkSubs(e)}
-          />
-        )}{" "}
-        Create Subscriptions
-        <br />
-        {perm.includes("Update Subscriptions") ? (
-          <input
-            type="checkbox"
-            name="Update Subscriptions"
-            id="ID4"
-            onClick={(e) => checkSubs(e)}
-            checked
-          />
-        ) : (
-          <input
-            type="checkbox"
-            name="Update Subscriptions"
-            id="ID4"
-            onClick={(e) => checkSubs(e)}
-          />
-        )}{" "}
-        Update Subscriptions
-        <br />
-        {perm.includes("Delete Subscriptions") ? (
-          <input
-            type="checkbox"
-            name="Delete Subscriptions"
-            id="ID5"
-            onClick={(e) => checkSubs(e)}
-            checked
-          />
-        ) : (
-          <input
-            type="checkbox"
-            name="Delete Subscriptions"
-            id="ID5"
-            onClick={(e) => checkSubs(e)}
-          />
-        )}{" "}
-        Delete Subscriptions
-        <br />
-        {/*///////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-        {perm.includes("View Movies") ? (
-          <input
-            type="checkbox"
-            name="View Movies"
-            id="ID2"
-            onClick={clearMovies}
-            checked
-          />
-        ) : (
-          <input
-            type="checkbox"
-            name="View Movies"
-            id="ID2"
-            onClick={clearMovies}
-          />
-        )}{" "}
-        View Movies
-        <br />
-        {perm.includes("Create Movies") ? (
-          <input
-            type="checkbox"
-            name="Create Movies"
-            id="ID6"
-            onClick={(e) => checkMovies(e)}
-            checked
-          />
-        ) : (
-          <input
-            type="checkbox"
-            name="Create Movies"
-            id="ID6"
-            onClick={(e) => checkMovies(e)}
-          />
-        )}{" "}
-        Create Movies
-        <br />
-        {perm.includes("Update Movies") ? (
-          <input
-            type="checkbox"
-            name="Update Movies"
-            id="ID7"
-            onClick={(e) => checkMovies(e)}
-            checked
-          />
-        ) : (
-          <input
-            type="checkbox"
-            name="Update Movies"
-            id="ID7"
-            onClick={(e) => checkMovies(e)}
-          />
-        )}{" "}
-        Update Subscriptions
-        <br />
-        {perm.includes("Delete Movies") ? (
-          <input
-            type="checkbox"
-            name="Delete Movies"
-            id="ID8"
-            onClick={(e) => checkMovies(e)}
-            checked
-          />
-        ) : (
-          <input
-            type="checkbox"
-            name="Delete Movies"
-            id="ID8"
-            onClick={(e) => checkMovies(e)}
-          />
-        )}{" "}
-        Delete Movies
-        <br />
-        <br />
-        <input type="button" value="Update" onClick={() => send(1)} />
-        <input type="button" value="Cancel" onClick={() => send(2)} />
-        <br />
-        <br />
+      <div className="box flex" style={{ gap: "10px", paddingTop:"10px" }}>
+        {inputs.map((input, index) => {
+          return (
+            <span key={index}>
+              <b>{input.text}: </b>
+              <input
+                type={input.type || "text"}
+                style={{ width: input.style }}
+                value={user[input.onChange]}
+                onChange={(e) =>
+                  setUser({ ...user, [input.onChange]: e.target.value })
+                }
+                min={input.min}
+              />
+            </span>
+          );
+        })}
+        <span>
+          <b>Created Date: </b>
+          {user.date}
+        </span>
+
+        <b>Permissions:</b>
+        {checkboxes.map((checkbox, index) => {
+          return (
+            <label key={index}>
+              <input
+                checked={perm.includes(checkbox.text)}
+                type="checkbox"
+                onClick={(e) => checkbox.onClick(e, checkbox.text)}
+              />
+              {checkbox.text}
+            </label>
+          );
+        })}
+
+        <div style={{ display: "flex", gap: "10px", paddingTop: "15px" }}>
+          <button onClick={() => send(true)}>Update</button>
+          <button onClick={() => send(false)}>Cancel</button>
+        </div>
       </div>
-      <br />
     </div>
   );
 }

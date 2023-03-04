@@ -1,93 +1,89 @@
+import { Button } from "../other/main";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
   const [add, setAdd] = useState(false);
 
-  useEffect(async () => {
-    let resp = await axios.get(`${process.env.REACT_APP_API_SERVER}/users`);
+  useEffect(() => {
+    const getUsers = async () => {
+      const resp = await axios.get(`${process.env.REACT_APP_API_SERVER}/users`);
+      setUsers(resp.data);
+    };
 
-    setUsers(resp.data);
+    getUsers();
   }, [users]);
 
-  const edit = async (x) => {
-    await axios.delete(`${process.env.REACT_APP_API_SERVER}/deleteUser/${x}`);
+  const edit = async (user) => {
+    await axios.delete(
+      `${process.env.REACT_APP_API_SERVER}/deleteUser/${user}`
+    );
   };
 
   return (
-    <div>
-      <div style={{ textAlign: "center" }}>
+    <>
+      <div className="flex">
         <h2>All Users Page</h2>
-        <Link to="">
-          <input
-            type="button"
-            value="All Users"
-            onClick={() => setAdd(false)}
-          />
-        </Link>
-        &nbsp;
-        <Link to="addUser">
-          <input type="button" value="Add User" onClick={() => setAdd(true)} />
-        </Link>
-        <br />
-        <br />
+        <div style={{ display: "flex", gap: "10px" }}>
+          <Button link="" text="All Users" onClick={() => setAdd(false)} />
+          <Button link="addUser" text="Add User" onClick={() => setAdd(true)} />
+        </div>
       </div>
 
       <Outlet />
 
-      {add == false
+      {!add
         ? users.map((item, index) => {
             return (
-              <div key={index}>
-                <div className="box1">
-                  <b>Name: </b> {item.name} <br />
-                  <b>User Name: </b> {item.user}
-                  <br />
+              <div key={index} style={{ marginBottom: "15px" }}>
+                <div className="box1 flex">
+                  <Span text="Name" data={item.name} />
+                  <Span text="User Name" data={item.user} />
                   {item.user != "admin" ? (
-                    <div>
-                      {" "}
-                      <b>Session Timeout (Minutes): </b> {item.session} <br />{" "}
-                    </div>
+                    <Span
+                      text="Session Timeout (Minutes)"
+                      data={item.session}
+                    />
                   ) : null}
-                  <b>Created Date: </b> {item.date} <br />
-                  <br />
-                  <b>Permissions: </b>
-                  {item.perm.map((x, index) => {
-                    return (
-                      <>
-                        {index != item.perm.length - 1 ? (
-                          <> {x}, </>
-                        ) : (
-                          <> {x} </>
-                        )}
-                      </>
-                    );
+                  <Span text="Created Date" data={item.date} />
+                  <b style={{paddingTop:"10px"}}>Permissions:</b>
+                  {item.perm.map((string, index) => {
+                    return `${string}${
+                      index != item.perm.length - 1 ? ", " : ""
+                    }`;
                   })}
-                  <br />
-                  <br />
                   {item.user != "admin" ? (
-                    <div>
-                      <Link to={"editUser/" + item.id}>
-                        <input type="button" value="Edit" />
-                      </Link>
-                      <Link to="">
-                        <input
-                          onClick={() => edit(item.id)}
-                          type="button"
-                          value="Delete"
-                        />
-                      </Link>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "10px",
+                        paddingTop: "15px",
+                      }}
+                    >
+                      <Button link={`editUser/${item.id}`} text="Edit" />
+                      <Button
+                        link=""
+                        text="Delete"
+                        onClick={() => edit(item.id)}
+                      />
                     </div>
                   ) : null}
                 </div>
-                <br />
-                <br />
               </div>
             );
           })
         : null}
-    </div>
+    </>
+  );
+}
+
+function Span(props) {
+  return (
+    <span>
+      <b>{props.text}: </b>
+      {props.data}
+    </span>
   );
 }

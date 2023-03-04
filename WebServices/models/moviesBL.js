@@ -1,7 +1,7 @@
 const MoviesModel = require("../DAL/moviesModel");
 
 // get all movies in DB
-const findMovies = function () {
+const getMovies = function () {
   return new Promise((resolve, reject) => {
     MoviesModel.find({}, function (err, data) {
       if (err) {
@@ -13,15 +13,15 @@ const findMovies = function () {
   });
 };
 
-// save movie in DB if there isn't data before
-const saveMovies1 = function (obj) {
+// save movie in DB
+const saveMovie = function (obj, method) {
   return new Promise((resolve, reject) => {
     const movie = new MoviesModel({
-      _id: obj.id,
-      Name: obj.name,
-      Genres: obj.genres,
-      Image: obj.image.medium,
-      Premiered: obj.premiered,
+      _id: obj[method ? "_id" : "id"],
+      Name: obj[method ? "Name" : "name"],
+      Genres: obj[method ? "Genres" : "genres"],
+      Image: obj[method ? "Image" : "image.medium"],
+      Premiered: obj[method ? "Premiered" : "premiered"],
     });
 
     movie.save(function (err) {
@@ -34,28 +34,7 @@ const saveMovies1 = function (obj) {
   });
 };
 
-// save movie in DB if there is data before
-const saveMovies2 = function (obj) {
-  return new Promise((resolve, reject) => {
-    const movie = new MoviesModel({
-      _id: obj._id,
-      Name: obj.Name,
-      Genres: obj.Genres,
-      Image: obj.Image,
-      Premiered: obj.Premiered,
-    });
-
-    movie.save(function (err) {
-      if (err) {
-        reject(err);
-      }
-    });
-
-    resolve(movie);
-  });
-};
-
-// delete movie in DB
+// delete movie from DB
 const deleteMovie = function (id) {
   return new Promise((resolve, reject) => {
     MoviesModel.findOneAndDelete({ _id: id }, function (err, data) {
@@ -68,4 +47,4 @@ const deleteMovie = function (id) {
   });
 };
 
-module.exports = { findMovies, saveMovies1, saveMovies2, deleteMovie };
+module.exports = { getMovies, saveMovie, deleteMovie };

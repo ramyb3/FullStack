@@ -1,7 +1,7 @@
 const SubscriptionsModel = require("../DAL/subscriptionsModel");
 
 // get all subs from DB
-const findSubs = function () {
+const getSubs = function () {
   return new Promise((resolve, reject) => {
     SubscriptionsModel.find({}, function (err, data) {
       if (err) {
@@ -28,7 +28,7 @@ const findSub = function (id) {
 
 // save sub to DB if this sub isn't in DB
 const saveSubs1 = async function (obj) {
-  const data = await findSubs();
+  const data = await getSubs();
   let id;
 
   if (data.length > 0) {
@@ -99,7 +99,7 @@ const updateSubs = async function (obj) {
 
 // delete movies in this sub in DB
 const deleteMoviesSubs = async function (id) {
-  const data = await findSubs();
+  const data = await getSubs();
   const arr = [];
 
   for (let i = 0; i < data.length; i++) {
@@ -120,7 +120,7 @@ const deleteMoviesSubs = async function (id) {
 
 // delete members in this sub in DB
 const deleteMembersSubs = async function (id) {
-  let arr = await findSubs();
+  let arr = await getSubs();
   arr = arr.filter((data) => data.MemberId != id);
   return arr;
 };
@@ -139,7 +139,7 @@ const deleteAllSubs = async function () {
 };
 
 module.exports = {
-  findSubs,
+  getSubs,
   findSub,
   saveSubs1,
   saveSubs2,

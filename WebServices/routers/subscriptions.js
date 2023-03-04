@@ -14,7 +14,7 @@ router.route("/").get(async function (req, resp) {
 
 //if want to add/edit movie from movies pages
 router.route("/movies").post(async function (req, resp) {
-  await moviesBL.saveMovies2(req.body);
+  await moviesBL.saveMovie(req.body, true);
 
   const array = await funcBL.getData();
   return resp.json(array);
@@ -30,7 +30,7 @@ router.route("/movies/:id").delete(async function (req, resp) {
 
 //if want to add/edit members from members pages
 router.route("/members").post(async function (req, resp) {
-  await membersBL.saveMembers2(req.body);
+  await membersBL.saveMember(req.body, true);
 
   const array = await funcBL.getData();
   return resp.json(array);

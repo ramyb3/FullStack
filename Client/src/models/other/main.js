@@ -1,45 +1,33 @@
 import { Link, Outlet } from "react-router-dom";
 
-function Main(props) {
-  const reset = () => {
-    props.callback([]);
-  };
-
+export default function Main(props) {
   return (
-    <div>
-      <big>
-        <b style={{ color: "rgb(69, 78, 208)" }}>
-          {" "}
-          Connected User: {props.props.name}{" "}
-        </b>
-      </big>
-      <br />
-      <br />
-      {props.props.perm.includes("View Movies") ? (
-        <Link to="movies">
-          <input type="button" value="Movies" />
-        </Link>
-      ) : null}
-      &nbsp;
-      {props.props.perm.includes("View Subscriptions") ? (
-        <Link to="subscriptions">
-          <input type="button" value="Subscriptions" />
-        </Link>
-      ) : null}
-      &nbsp;
-      {props.props.name == "admin" ? (
-        <Link to="manageUsers">
-          <input type="button" value="Users Management" />
-        </Link>
-      ) : null}
-      &nbsp;
-      <Link to="/">
-        <input type="button" value="Logout" onClick={reset} />
-      </Link>{" "}
-      <br />
+    <>
+      <b style={{ color: "rgb(69, 78, 208)", fontSize: "20px" }}>
+        Connected User: {props.props.name}
+      </b>
+
+      <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+        {props.props.perm.includes("View Movies") ? (
+          <Button link="movies" text="Movies" />
+        ) : null}
+        {props.props.perm.includes("View Subscriptions") ? (
+          <Button link="subscriptions" text="Subscriptions" />
+        ) : null}
+        {props.props.name == "admin" ? (
+          <Button link="manageUsers" text="Users Management" />
+        ) : null}
+        <Button link="/" text="Logout" onClick={() => props.callback([])} />
+      </div>
       <Outlet />
-    </div>
+    </>
   );
 }
 
-export default Main;
+function Button(props) {
+  return (
+    <Link to={props.link}>
+      <button onClick={props.onClick}>{props.text}</button>
+    </Link>
+  );
+}

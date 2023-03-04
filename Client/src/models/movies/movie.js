@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
-function Movie(props) {
+export default function Movie(props) {
   const params = useParams();
 
   const navigate = useNavigate();
@@ -119,5 +119,3 @@ function Movie(props) {
     </div>
   );
 }
-
-export default Movie;

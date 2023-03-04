@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import Comp from "./comp1";
 
-function Movies(props) {
+export default function Movies(props) {
   const navigate = useNavigate();
 
   const [movies, setMovies] = useState([]);
@@ -205,5 +205,3 @@ function Movies(props) {
     </div>
   );
 }
-
-export default Movies;

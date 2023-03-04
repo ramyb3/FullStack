@@ -24,6 +24,5 @@
       "Update Movies",
       "Delete Movies"
     ]
-  },
-  { "id": 2, "permissions": [] }
+  }
 ]

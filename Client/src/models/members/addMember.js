@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-function AddMember(props) {
+export default function AddMember(props) {
   const navigate = useNavigate();
 
   const [member, setMember] = useState({ name: "", city: "", email: "" });
@@ -67,5 +67,3 @@ function AddMember(props) {
     </div>
   );
 }
-
-export default AddMember;

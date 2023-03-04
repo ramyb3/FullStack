@@ -1,3 +1,19 @@
+input[type="button"],
+button {
+  cursor: pointer;
+  font-size: 18px;
+  height: 25px;
+}
+
+li {
+  list-style: none;
+}
+
+h1 {
+  text-align: center;
+  color: rgb(109, 65, 67);
+}
+
 .box {
   border-color: rgb(183, 131, 247);
   border-style: groove;
@@ -19,12 +35,9 @@
   text-align: center;
 }
 
-input[type="button"] {
-  cursor: pointer;
-  font-size: 18px;
-  height: 25px;
-}
-
-li {
-  list-style: none;
+.flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 15px;
 }

@@ -4,7 +4,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import Comp1 from "./comp2";
 import Comp2 from "./comp3";
 
-function Subs(props) {
+export default function Subs(props) {
   const navigate = useNavigate();
 
   const [movies, setMovies] = useState([]);
@@ -218,5 +218,3 @@ function Subs(props) {
     </div>
   );
 }
-
-export default Subs;

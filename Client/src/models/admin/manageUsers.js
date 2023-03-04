@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
-function Users() {
+export default function Users() {
   const [users, setUsers] = useState([]);
   const [add, setAdd] = useState(false);
 
@@ -91,5 +91,3 @@ function Users() {
     </div>
   );
 }
-
-export default Users;

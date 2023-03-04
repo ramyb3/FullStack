@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function Comp(props) {
+export default function Comp(props) {
   const [check, setCheck] = useState(false);
 
   useEffect(() => {
@@ -26,5 +26,3 @@ function Comp(props) {
     </div>
   );
 }
-
-export default Comp;

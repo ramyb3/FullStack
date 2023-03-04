@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function Comp(props) {
+export default function Comp(props) {
   const [list, setList] = useState([]);
 
   useEffect(() => {
@@ -34,5 +34,3 @@ function Comp(props) {
     </div>
   );
 }
-
-export default Comp;

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function EditMember(props) {
+export default function EditMember(props) {
   const navigate = useNavigate();
 
   const params = useParams();
@@ -91,5 +91,3 @@ function EditMember(props) {
     </div>
   );
 }
-
-export default EditMember;

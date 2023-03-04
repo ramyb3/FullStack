@@ -2,48 +2,41 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
-function Create() {
+export default function Create() {
   const navigate = useNavigate();
-
   const [user, setUser] = useState({ user: "", psw: "" });
 
   const send = async () => {
     if (user.user != "" && user.psw != "") {
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${process.env.REACT_APP_API_SERVER}/create`,
         user
       );
 
-      if (!Array.isArray(resp.data)) alert(resp.data);
-      else navigate("/"); //to login
-    } else alert("YOU MUST ENTER USERNAME AND PASSWORD!!");
+      if (!Array.isArray(resp.data)) {
+        alert(resp.data);
+      } else {
+        navigate("/");
+      }
+    } else {
+      alert("YOU MUST ENTER USERNAME AND PASSWORD!!");
+    }
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <div className="box">
-        <h2>Create Account Page</h2>
-        Enter the User Name that the ADMIN gave you:
-        <br />{" "}
-        <input
-          type="text"
-          onChange={(e) => setUser({ ...user, user: e.target.value })}
-        />
-        <br />
-        <br />
-        <input
-          placeholder="Enter Password"
-          type="password"
-          onChange={(e) => setUser({ ...user, psw: e.target.value })}
-        />
-        <br />
-        <br />
-        <input type="button" value="Create" onClick={send} />
-        <br />
-        <br />
-      </div>
+    <div className="box flex" style={{ gap: "15px" }}>
+      <h2>Create Account Page</h2>
+      <input
+        type="text"
+        placeholder="Enter given User Name"
+        onChange={(e) => setUser({ ...user, user: e.target.value })}
+      />
+      <input
+        placeholder="Enter Password"
+        type="password"
+        onChange={(e) => setUser({ ...user, psw: e.target.value })}
+      />
+      <button onClick={send}>Create</button>
     </div>
   );
 }
-
-export default Create;

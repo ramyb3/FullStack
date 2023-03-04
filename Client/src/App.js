@@ -1,7 +1,4 @@
-import { Route, Routes } from "react-router-dom";
-import { useState } from "react";
 import "./App.css";
-
 import LoginComp from "./models/other/login";
 import CreateComp from "./models/other/create";
 import MainComp from "./models/other/main";
@@ -16,19 +13,15 @@ import AddMemberComp from "./models/members/addMember";
 import EditMemberComp from "./models/members/editMember";
 import MemberComp from "./models/members/member";
 import MovieComp from "./models/movies/movie";
+import { Route, Routes } from "react-router-dom";
+import { useState } from "react";
 
-function App() {
+export default function App() {
   const [props, setProps] = useState([]);
 
   return (
-    <div>
-      <div style={{ textAlign: "center" }}>
-        This site has been uploaded with the help of Avi Koenig{" "}
-      </div>
-
-      <h1 style={{ textAlign: "center", color: "rgb(109, 65, 67)" }}>
-        Movies - Subscriptions Web Site
-      </h1>
+    <>
+      <h1>Movies - Subscriptions Web Site</h1>
 
       <Routes>
         <Route
@@ -75,8 +68,6 @@ function App() {
           />
         </Route>
       </Routes>
-    </div>
+    </>
   );
 }
-
-export default App;

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function EditMovie(props) {
+export default function EditMovie(props) {
   const navigate = useNavigate();
 
   const [movie, setMovie] = useState({
@@ -284,5 +284,3 @@ function EditMovie(props) {
     </div>
   );
 }
-
-export default EditMovie;

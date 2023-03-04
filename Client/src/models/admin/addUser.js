@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
-function AddUser() {
+export default function AddUser() {
   const navigate = useNavigate();
 
   const [user, setUser] = useState({
@@ -173,5 +173,3 @@ function AddUser() {
     </div>
   );
 }
-
-export default AddUser;

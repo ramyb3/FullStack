@@ -4,8 +4,8 @@ const moviesBL = require("./moviesBL");
 const subscriptionsBL = require("./subscriptionsBL");
 const membersBL = require("./membersBL");
 
+// get all data from DB
 exports.getData = async function () {
-  // get all data from DB
   let movies = await moviesBL.findMovies();
   let members = await membersBL.findMembers();
   const subs = await subscriptionsBL.findSubs();
@@ -37,5 +37,5 @@ exports.getData = async function () {
     }
   }
 
-  return [movies, members, subs]; // return all data to API
+  return [movies, members, subs];
 };

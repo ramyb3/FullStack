@@ -1,8 +1,7 @@
 const UsersModel = require("../DAL/usersModel");
 
-const findUser = function (
-  name // get user from DB by name
-) {
+// get user from DB by name
+const findUser = function (name) {
   return new Promise((resolve, reject) => {
     UsersModel.find({ UserName: name }, function (err, data) {
       if (err) {
@@ -14,8 +13,8 @@ const findUser = function (
   });
 };
 
-const findAllUsers = function () // get all users from DB
-{
+// get all users from DB
+const findAllUsers = function () {
   return new Promise((resolve, reject) => {
     UsersModel.find({}, function (err, data) {
       if (err) {
@@ -27,9 +26,8 @@ const findAllUsers = function () // get all users from DB
   });
 };
 
-const savePassword = function (
-  obj // save password to exist user in DB
-) {
+// save password to exist user in DB
+const savePassword = function (obj) {
   return new Promise((resolve, reject) => {
     UsersModel.findOneAndUpdate(
       { UserName: obj.user },
@@ -48,12 +46,10 @@ const savePassword = function (
   });
 };
 
-const saveUserName = function (
-  Uname,
-  id // save name to new user in DB
-) {
+// save name to new user in DB
+const saveUserName = function (Uname, id) {
   return new Promise((resolve, reject) => {
-    let user = new UsersModel({
+    const user = new UsersModel({
       _id: id,
       UserName: Uname,
     });
@@ -68,9 +64,8 @@ const saveUserName = function (
   });
 };
 
-const deleteUserName = function (
-  id // delete user by id from DB
-) {
+// delete user by id from DB
+const deleteUserName = function (id) {
   return new Promise((resolve, reject) => {
     UsersModel.findOneAndDelete({ _id: id }, function (err, data) {
       if (err) {

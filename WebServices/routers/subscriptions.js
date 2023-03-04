@@ -51,8 +51,7 @@ router.route("/subscriptions").post(async function (req, resp) {
   if (array.length == 0) {
     // when there isn't data in subs DB - add subs
     await subsBL.saveSubs1(req.body);
-  }
-  if (array.length > 0) {
+  } else {
     // when there is data in subs DB - edit subs
     await subsBL.updateSubs(req.body);
   }

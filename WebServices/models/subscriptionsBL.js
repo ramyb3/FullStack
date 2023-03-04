@@ -28,7 +28,7 @@ const findSub = function (id) {
 
 // save sub to DB if this sub isn't in DB
 const saveSubs1 = async function (obj) {
-  const data = await findSubs(); // get all subs
+  const data = await findSubs();
   let id;
 
   if (data.length > 0) {
@@ -77,8 +77,8 @@ const saveSubs2 = async function (obj) {
 
 // update sub in DB
 const updateSubs = async function (obj) {
-  const arr = await findSub(Number(obj.id)); //get specific sub by id
-  arr[0].Movies.push({ MovieId: obj.movie, Date: obj.date }); //update movies in this sub
+  const arr = await findSub(Number(obj.id));
+  arr[0].Movies.push({ MovieId: obj.movie, Date: obj.date });
 
   return new Promise((resolve, reject) => {
     SubscriptionsModel.findOneAndUpdate(
@@ -99,12 +99,11 @@ const updateSubs = async function (obj) {
 
 // delete movies in this sub in DB
 const deleteMoviesSubs = async function (id) {
-  const data = await findSubs(); // get all subs from DB
+  const data = await findSubs();
   const arr = [];
 
-  // loop that checks which movie need to be deleted
   for (let i = 0; i < data.length; i++) {
-    const movies = data[i].Movies.filter((movie) => movie.MovieId != id); //get all movies except the one that need to delete
+    const movies = data[i].Movies.filter((movie) => movie.MovieId != id);
 
     //if there's movies after the filter
     if (movies.length != 0) {
@@ -121,8 +120,8 @@ const deleteMoviesSubs = async function (id) {
 
 // delete members in this sub in DB
 const deleteMembersSubs = async function (id) {
-  let arr = await findSubs(); // get all subs from DB
-  arr = arr.filter((data) => data.MemberId != id); // get all subs except the one that need to delete
+  let arr = await findSubs();
+  arr = arr.filter((data) => data.MemberId != id);
   return arr;
 };
 

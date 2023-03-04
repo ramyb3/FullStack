@@ -1,58 +1,49 @@
 const restDAL = require("../DAL/rest");
 
-const showAll = async function () // get all members from DB
-{
-  let resp = await restDAL.getData();
-
+// get all members from DB
+const showAll = async function () {
+  const resp = await restDAL.getData();
   return resp[1];
 };
 
-const addMember = async function (
-  temp // add members to DB
-) {
-  let obj;
+// add members to DB
+const addMember = async function (member) {
+  // if update movie
+  let obj = {
+    _id: member.id,
+    Name: member.name,
+    Email: member.email,
+    City: member.city,
+  };
 
-  if (!temp.id) {
-    // if new member
-    let resp = await restDAL.getData(); // get all members
-
-    let id = resp[1].map((x) => x._id); // get all member id's
-
-    let max = Math.max(...id); // get the last id
-
-    obj = { _id: max + 1, Name: temp.name, Email: temp.email, City: temp.city };
-  } // if update movie
-  else {
-    obj = { _id: temp.id, Name: temp.name, Email: temp.email, City: temp.city };
+  // if new member
+  if (!member.id) {
+    let data = await restDAL.getData();
+    data = data[1].map((members) => members._id);
+    data = Math.max(...data); // get the last id
+    obj._id = data + 1;
   }
 
   await restDAL.postMembers(obj);
 };
 
-const updateMember = async function (
-  obj // get member that should be updated
-) {
-  let resp = await showAll(); // get all members
-
-  let member = resp.find((x) => x._id == obj); // get only the one member i need to update
-
+// get member that should be updated
+const updateMember = async function (obj) {
+  let member = await showAll();
+  member = member.find((data) => data._id == obj);
   return member;
 };
 
-const saveUpdate = async function (
-  obj // save update member in DB
-) {
-  let resp = await showAll(); // get all members
-
-  let member = resp.find((x) => x._id == obj.id); // get only the one member i need to update
-
-  await deleteMember(member._id); // delete this member
-  await addMember(obj); // add updated member
+// save update member in DB
+const saveUpdate = async function (obj) {
+  let member = await showAll();
+  member = member.find((data) => data._id == obj.id);
+  await deleteMember(member._id);
+  await addMember(obj);
 };
 
-const deleteMember = async function (
-  id // delete member in DB
-) {
+// delete member in DB
+const deleteMember = async function (id) {
   await restDAL.deleteMembers(id);
 };
 

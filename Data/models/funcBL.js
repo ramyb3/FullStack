@@ -2,54 +2,46 @@ const dbBL = require("./dbBL");
 const permBL = require("./permissionsBL");
 const usersBL = require("./usersBL");
 
-const update = async function (
-  obj // update user in DB
-) {
-  let id = Number(obj.id); // declaring as num variable
+// update user in DB
+const update = async function (obj) {
+  const id = Number(obj.id);
+  let nameData = await dbBL.findAllUsers();
+  nameData = nameData.find((data) => data._id == id);
 
-  let userName = await dbBL.findAllUsers(); // get all users from DB
-  let nameData = userName.find((x) => x._id == id); // get specific user from DB
-
-  let newUser = {
-    id: id,
+  const newUser = {
+    id,
     Fname: obj.Fname,
     Lname: obj.Lname,
     date: obj.date,
     session: obj.session,
   };
 
-  await usersBL.deleteUser(id); // delete this user from file
-  await usersBL.saveUser(newUser); // save new user in file
+  await usersBL.deleteUser(id);
+  await usersBL.saveUser(newUser);
+  await permBL.deletePermissions(id);
+  await permBL.savePermissions(id, obj);
+  await dbBL.deleteUserName(id);
+  await dbBL.saveUserName(obj.Uname, id);
 
-  await permBL.deletePermissions(id); // delete this user permissions from file
-  await permBL.savePermissions(id, obj); // save new user permissions in file
-
-  await dbBL.deleteUserName(id); // delete this user from DB
-  await dbBL.saveUserName(obj.Uname, id); // save new user in DB
-
+  // if this user in DB has already password
   if (nameData.Password) {
-    // if this user in DB has already password
     nameData = { user: obj.Uname, psw: nameData.Password };
-
     await dbBL.findAllUsers();
     await dbBL.savePassword(nameData);
   }
 };
 
-const edit = async function (
-  id // get user that should be updated
-) {
-  // get all data
-  let users = await usersBL.getUsers();
-  let perm = await permBL.getPermissions();
-  let userName = await dbBL.findAllUsers();
+// get user that should be updated
+const edit = async function (id) {
+  let user = await usersBL.getUsers();
+  let permData = await permBL.getPermissions();
+  let nameData = await dbBL.findAllUsers();
 
-  // get user data that i need to update
-  let user = users.find((x) => x.id == id);
-  let permData = perm.find((x) => x.id == id);
-  let nameData = userName.find((x) => x._id == id);
+  user = user.find((data) => data.id == id);
+  permData = permData.find((data) => data.id == id);
+  nameData = nameData.find((data) => data._id == id);
 
-  let data = {
+  const obj = {
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
@@ -59,41 +51,35 @@ const edit = async function (
     perm: permData.permissions,
   };
 
-  return data;
+  return obj;
 };
 
-const getAll = async function () // get all users from DB
-{
-  // get all data
-  let users = await usersBL.getUsers();
-  let perm = await permBL.getPermissions();
-  let userName = await dbBL.findAllUsers();
+// get all users from DB
+const getAll = async function () {
+  const users = await usersBL.getUsers();
+  const perm = await permBL.getPermissions();
+  const userName = await dbBL.findAllUsers();
+  const arr = [];
 
-  let temp = [];
+  // get all user data in order
+  for (let i = 0; i < users.length; i++) {
+    const permData = perm.find((data) => data.id == users[i].id);
+    const nameData = userName.find((data) => data._id == users[i].id);
+    const name = users[i].firstName + " " + users[i].lastName;
 
-  for (
-    i = 0;
-    i < users.length;
-    i++ // loop that get all user data in order
-  ) {
-    let permData = perm.find((x) => x.id == users[i].id); // get permissions for this user
-    let nameData = userName.find((x) => x._id == users[i].id); // get user data from DB for this user
-
-    let name = users[i].firstName + " " + users[i].lastName; // get full name of this user
-
-    let data = {
+    const obj = {
       id: users[i].id,
-      name: name,
+      name,
       user: nameData.UserName,
       session: users[i].sessionTimeOut,
       date: users[i].createdDate,
       perm: permData.permissions,
     };
 
-    temp.push(data);
+    arr.push(obj);
   }
 
-  return temp;
+  return arr;
 };
 
 module.exports = { update, edit, getAll };

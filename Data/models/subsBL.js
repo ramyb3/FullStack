@@ -1,28 +1,24 @@
 const restDAL = require("../DAL/rest");
 const moviesBL = require("./moviesBL");
 
-const checkMovie = async function (
-  obj // assign movie to specific member
-) {
-  let movies = await moviesBL.showAll(); // get all movies
+// assign movie to specific member
+const checkMovie = async function (obj) {
+  let movie = await moviesBL.showAll();
+  movie = movie.find((data) => data.Name == obj.movie);
 
-  let movie = movies.find((x) => x.Name == obj.movie); // get specific movie
-  let temp = { id: obj.id, date: obj.date, movie: movie._id };
+  obj = { id: obj.id, date: obj.date, movie: movie._id };
 
-  await restDAL.postSubs(temp);
+  await restDAL.postSubs(obj);
 };
 
-const getSubs = async function () // get all subscriptions
-{
-  let resp = await restDAL.getData();
-
+// get all subscriptions
+const getSubs = async function () {
+  const resp = await restDAL.getData();
   return resp[2];
 };
 
-const deleteSubs = async function (
-  obj,
-  id // delete specific subscription
-) {
+// delete specific subscription
+const deleteSubs = async function (obj, id) {
   await restDAL.deleteSubs(obj, id);
 };
 

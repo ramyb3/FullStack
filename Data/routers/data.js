@@ -16,6 +16,7 @@ router.route("/").get(async function (req, resp) {
   return resp.json(array);
 });
 
+//main page
 router.route("/main").post(async function (req, resp) {
   const check = await loginBL.check(req.body); // check authentication
 
@@ -47,8 +48,9 @@ router.route("/main").post(async function (req, resp) {
   }
 });
 
-//need to check this
+//create user
 router.route("/create").post(async function (req, resp) {
+  //need to check this
   const data = await dbBL.findUser(req.body.user);
 
   if (data.length == 0) {
@@ -73,34 +75,38 @@ router.route("/create").post(async function (req, resp) {
   }
 });
 
+// get all users
 router.route("/users").get(async function (req, resp) {
   const array = await funcBL.getAll();
   return resp.json(array);
 });
 
+// add user
 router.route("/addUser").post(async function (req, resp) {
-  let data = await usersBL.saveUser(req.body); // save user in file
-  await permBL.savePermissions(data, req.body); // save permission in file
-  await dbBL.saveUserName(req.body.Uname, data); // save user in DB
+  let data = await usersBL.saveUser(req.body);
+  await permBL.savePermissions(data, req.body);
+  await dbBL.saveUserName(req.body.Uname, data);
 
   data = await restDAL.getData();
   return resp.json(data);
 });
 
+// get data of specific user
 router.route("/editUser/:id").get(async function (req, resp) {
-  const data = await funcBL.edit(req.params.id); // get user that i want to update
+  const data = await funcBL.edit(req.params.id);
   return resp.json(data);
 });
 
+// update user
 router.route("/updateUser").post(async function (req, resp) {
-  await funcBL.update(req.body); // update new data of specific user
+  await funcBL.update(req.body);
 
   const array = await restDAL.getData();
   return resp.json(array);
 });
 
+// delete user
 router.route("/deleteUser/:id").delete(async function (req, resp) {
-  // delete user data from all files and DB
   await dbBL.deleteUserName(req.params.id);
   await usersBL.deleteUser(req.params.id);
   await permBL.deletePermissions(req.params.id);
@@ -109,8 +115,8 @@ router.route("/deleteUser/:id").delete(async function (req, resp) {
   return resp.json(array);
 });
 
+// get all search data
 router.route("/findMovies/:movie").post(async function (req, resp) {
-  // get all search data
   const movies = await moviesBL.search(req.params.movie);
   const subs = await subsBL.getSubs();
   const members = await membersBL.showAll();
@@ -118,6 +124,7 @@ router.route("/findMovies/:movie").post(async function (req, resp) {
   return resp.json([movies, members, subs]);
 });
 
+// get data of specific movie
 router.route("/movies/:id").get(async function (req, resp) {
   const movies = await moviesBL.showAll();
   const subs = await subsBL.getSubs();
@@ -139,34 +146,39 @@ router.route("/movies/:id").get(async function (req, resp) {
   return resp.json([sub, movie]);
 });
 
+// add movie
 router.route("/addMovie").post(async function (req, resp) {
-  await moviesBL.addMovie(req.body); // add this movie to DB
+  await moviesBL.addMovie(req.body);
 
   const array = await restDAL.getData();
   return resp.json(array);
 });
 
+// get data of specific movie
 router.route("/editMovie/:id").get(async function (req, resp) {
-  const movie = await moviesBL.updateMovie(req.params.id); // get data of movie that should be updated
-  const date = movie.Premiered.slice(0, 10); // get full premiere date
+  const movie = await moviesBL.updateMovie(req.params.id);
+  const date = movie.Premiered.slice(0, 10);
   return resp.json([movie, date]);
 });
 
+// update movie
 router.route("/updateMovie").post(async function (req, resp) {
-  await moviesBL.saveUpdate(req.body); // update this movie
+  await moviesBL.saveUpdate(req.body);
 
   const array = await restDAL.getData();
   return resp.json(array);
 });
 
+// delete movie
 router.route("/deleteMovie/:id").delete(async function (req, resp) {
-  await moviesBL.deleteMovie(req.params.id); // delete this movie
-  await subsBL.deleteSubs(1, req.params.id); // delete all subs that assigned to this movie
+  await moviesBL.deleteMovie(req.params.id);
+  await subsBL.deleteSubs(1, req.params.id);
 
   const array = await restDAL.getData();
   return resp.json(array);
 });
 
+// get data of specific subscription
 router.route("/subscriptions/:id").get(async function (req, resp) {
   const movies = await moviesBL.showAll();
   const subs = await subsBL.getSubs();
@@ -184,36 +196,40 @@ router.route("/subscriptions/:id").get(async function (req, resp) {
   return resp.json([sub.Movies, member, movies, list]);
 });
 
+// add member
 router.route("/addMember").post(async function (req, resp) {
-  await membersBL.addMember(req.body); // add this member to DB
+  await membersBL.addMember(req.body);
 
   const array = await restDAL.getData();
   return resp.json(array);
 });
 
+// get data of specific member
 router.route("/editMember/:id").get(async function (req, resp) {
-  const member = await membersBL.updateMember(req.params.id); // get data of member that should be updated
+  const member = await membersBL.updateMember(req.params.id);
   return resp.json(member);
 });
 
+// update member
 router.route("/updateMember").post(async function (req, resp) {
-  await membersBL.saveUpdate(req.body); // update this member
+  await membersBL.saveUpdate(req.body);
 
   const array = await restDAL.getData();
   return resp.json(array);
 });
 
+// delete member
 router.route("/deleteMember/:id").delete(async function (req, resp) {
-  await membersBL.deleteMember(req.params.id); // delete this member from DB
-  await subsBL.deleteSubs(2, req.params.id); // delete this member subs from DB
+  await membersBL.deleteMember(req.params.id);
+  await subsBL.deleteSubs(2, req.params.id);
 
   const array = await restDAL.getData();
   return resp.json(array);
 });
 
-
+// assign specific movie to specific member
 router.route("/addSubs").post(async function (req, resp) {
-  await subsBL.checkMovie(req.body); // assign this movie to specific this member
+  await subsBL.checkMovie(req.body);
 
   const array = await restDAL.getData();
   return resp.json(array);

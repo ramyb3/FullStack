@@ -1,35 +1,30 @@
-.box
-{
-    border-color: rgb(183, 131, 247);
-    border-style: groove;
-    width: 300px;
-    margin: auto;
+.box {
+  border-color: rgb(183, 131, 247);
+  border-style: groove;
+  width: 300px;
+  margin: auto;
 }
 
-.box1
-{
-    border-style: solid;
-    width: 25em;
-    margin: auto;
-    text-align: center;
+.box1 {
+  border-style: solid;
+  width: 25em;
+  margin: auto;
+  text-align: center;
 }
 
-.box2
-{
-    border-style: groove;
-    width: 22em;
-    margin: auto;
-    text-align: center;
+.box2 {
+  border-style: groove;
+  width: 22em;
+  margin: auto;
+  text-align: center;
 }
 
-input[type=button]
-{
-    cursor: pointer;
-    font-size: 18px;
-    height: 25px;
+input[type="button"] {
+  cursor: pointer;
+  font-size: 18px;
+  height: 25px;
 }
 
-li
-{
-    list-style: none;
+li {
+  list-style: none;
 }

@@ -1,47 +1,38 @@
 import { useEffect, useState } from "react";
 
-function Comp(props)
-{
-    const [list,setList]= useState([]);
+function Comp(props) {
+  const [list, setList] = useState([]);
 
-    useEffect(()=>
-    {
-        setList(props.movies);
+  useEffect(() => {
+    setList(props.movies);
 
-        let temp=[];
+    let temp = [];
 
-        let sub= props.subs.find(x=> x.MemberId==props.props._id);
+    let sub = props.subs.find((x) => x.MemberId == props.props._id);
 
-        if(sub!= undefined)
-        {
-            for(var i=0; i<sub.Movies.length; i++)
-            temp.push(sub.Movies[i].MovieId);
-            
-            setList(props.movies.filter(x=> !temp.includes(x._id)));
-        }
-    },[props]);
+    if (sub != undefined) {
+      for (var i = 0; i < sub.Movies.length; i++)
+        temp.push(sub.Movies[i].MovieId);
 
-    const send= (e)=>
-    {
-        props.callback(e);
+      setList(props.movies.filter((x) => !temp.includes(x._id)));
     }
-    
-    return(<div>
+  }, [props]);
 
-        <select onChange={e=> send(e.target.value)}>
+  const send = (e) => {
+    props.callback(e);
+  };
 
-            <option value="">--Select Movie--</option>
+  return (
+    <div>
+      <select onChange={(e) => send(e.target.value)}>
+        <option value="">--Select Movie--</option>
 
-            {
-                list.map(i=>
-                {
-                    return<option value={i.Name}> {i.Name} </option>
-                })
-            }
-
-        </select>
-        
-    </div>)
+        {list.map((i) => {
+          return <option value={i.Name}> {i.Name} </option>;
+        })}
+      </select>
+    </div>
+  );
 }
 
 export default Comp;

@@ -43,7 +43,9 @@ function Member(props) {
   }, []);
 
   const edit = async () => {
-    await axios.delete(`${process.env.REACT_APP_API_SERVER}/deleteMember/${member.id}`);
+    await axios.delete(
+      `${process.env.REACT_APP_API_SERVER}/deleteMember/${member.id}`
+    );
   };
 
   const showORhide = (obj) => {

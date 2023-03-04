@@ -20,7 +20,10 @@ function AddMember(props) {
   const send = async (x) => {
     if (x == 1) {
       if (member.name != "" && member.city != "" && member.email != "") {
-        await axios.post(`${process.env.REACT_APP_API_SERVER}/addMember`, member);
+        await axios.post(
+          `${process.env.REACT_APP_API_SERVER}/addMember`,
+          member
+        );
 
         navigate("/main/subscriptions");
       } else alert("YOU MUST FILL ALL THE FORM!!");

@@ -40,7 +40,9 @@ function Movie(props) {
   }, []);
 
   const edit = async () => {
-    await axios.delete(`${process.env.REACT_APP_API_SERVER}/deleteMovie/${movie.id}`);
+    await axios.delete(
+      `${process.env.REACT_APP_API_SERVER}/deleteMovie/${movie.id}`
+    );
   };
 
   return (

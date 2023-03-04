@@ -50,22 +50,20 @@ router.route("/main").post(async function (req, resp) {
 
 //create user
 router.route("/create").post(async function (req, resp) {
-  //need to check this
   const data = await dbBL.findUser(req.body.user);
 
   if (data.length == 0) {
     return resp.json("THIS USER DOES NOT EXIST!!");
   } else {
-    let check = false;
+    let hasPassword = true;
 
     if (!data[0].Password) {
       // check if user don't have a password
       await dbBL.savePassword(req.body);
-
-      check = true;
+      hasPassword = false;
     }
 
-    if (data[0].Password && !check) {
+    if (data[0].Password && hasPassword) {
       // check if user already created and has a password
       return resp.json("THIS USER ALREADY HAS PASSWORD!!");
     } else {

@@ -40,7 +40,10 @@ function EditMovie(props) {
   const send = async (x) => {
     if (x == 1) {
       if (movie.name != "" && movie.genres.length != 0 && movie.date != "") {
-        await axios.post(`${process.env.REACT_APP_API_SERVER}/updateMovie`, movie);
+        await axios.post(
+          `${process.env.REACT_APP_API_SERVER}/updateMovie`,
+          movie
+        );
 
         navigate("/main/movies");
       } else alert("YOU MUST FILL ALL THE FORM!!");

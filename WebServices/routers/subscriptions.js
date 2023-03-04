@@ -6,58 +6,64 @@ const subsBL = require("../models/subscriptionsBL");
 const membersBL = require("../models/membersBL");
 const funcBL = require("../models/funcBL");
 
+async function returnData() {
+  const data = await funcBL.getData();
+  return data;
+}
+
 //when in login page
 router.route("/").get(async function (req, resp) {
-  const array = await funcBL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 //if want to add/edit movie from movies pages
 router.route("/movies").post(async function (req, resp) {
   await moviesBL.saveMovie(req.body, true);
-
-  const array = await funcBL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 //if want to delete movies from movies pages
 router.route("/movies/:id").delete(async function (req, resp) {
   await moviesBL.deleteMovie(req.params.id);
-
-  const array = await funcBL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 //if want to add/edit members from members pages
 router.route("/members").post(async function (req, resp) {
   await membersBL.saveMember(req.body, true);
-
-  const array = await funcBL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 //if want to delete members from members pages
 router.route("/members/:id").delete(async function (req, resp) {
   await membersBL.deleteMember(req.params.id);
-
-  const array = await funcBL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 //if want to add/edit subs from members/movies pages
 router.route("/subscriptions").post(async function (req, resp) {
   let array = await subsBL.findSub(Number(req.body.id));
 
+  // when there isn't data in subs DB - add subs
   if (array.length == 0) {
-    // when there isn't data in subs DB - add subs
-    await subsBL.saveSubs1(req.body);
+    const data = await subsBL.getSubs();
+    let id;
+
+    if (data.length > 0) {
+      // if DB isn't empty
+      id = data[data.length - 1]._id + 1;
+    } else {
+      // when there isn't data in subs DB
+      id = 1;
+    }
+
+    await subsBL.saveSub(req.body, id);
   } else {
     // when there is data in subs DB - edit subs
-    await subsBL.updateSubs(req.body);
+    await subsBL.updateSub(req.body);
   }
 
-  array = await funcBL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 //if want to delete subs from members/movies pages
@@ -77,11 +83,10 @@ router.route("/subscriptions/:obj/:id").delete(async function (req, resp) {
 
   // save new data to subs DB
   for (let i = 0; i < array.length; i++) {
-    await subsBL.saveSubs2(array[i]);
+    await subsBL.saveSub(array[i], 0);
   }
 
-  array = await funcBL.getData();
-  return resp.json(array);
+  return resp.json(await returnData());
 });
 
 module.exports = router;

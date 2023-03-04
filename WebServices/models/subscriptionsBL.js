@@ -26,43 +26,13 @@ const findSub = function (id) {
   });
 };
 
-// save sub to DB if this sub isn't in DB
-const saveSubs1 = async function (obj) {
-  const data = await getSubs();
-  let id;
-
-  if (data.length > 0) {
-    // if DB isn't empty
-    id = data[data.length - 1]._id + 1;
-  } else {
-    // when there isn't data in subs DB
-    id = 1;
-  }
-
+// save sub to DB
+const saveSub = async function (obj, id) {
   return new Promise((resolve, reject) => {
     const subs = new SubscriptionsModel({
-      _id: id,
-      MemberId: obj.id,
-      Movies: [{ MovieId: obj.movie, Date: obj.date }],
-    });
-
-    subs.save(function (err) {
-      if (err) {
-        reject(err);
-      }
-    });
-
-    resolve(subs);
-  });
-};
-
-// save sub to DB if this sub was in DB
-const saveSubs2 = async function (obj) {
-  return new Promise((resolve, reject) => {
-    const subs = new SubscriptionsModel({
-      _id: obj._id,
-      MemberId: obj.MemberId,
-      Movies: obj.Movies,
+      _id: id > 0 ? id : obj_id,
+      MemberId: obj[id > 0 ? "id" : "MemberId"],
+      Movies: id > 0 ? [{ MovieId: obj.movie, Date: obj.date }] : obj.Movies,
     });
 
     subs.save(function (err) {
@@ -76,7 +46,7 @@ const saveSubs2 = async function (obj) {
 };
 
 // update sub in DB
-const updateSubs = async function (obj) {
+const updateSub = async function (obj) {
   const arr = await findSub(Number(obj.id));
   arr[0].Movies.push({ MovieId: obj.movie, Date: obj.date });
 
@@ -141,9 +111,8 @@ const deleteAllSubs = async function () {
 module.exports = {
   getSubs,
   findSub,
-  saveSubs1,
-  saveSubs2,
-  updateSubs,
+  saveSub,
+  updateSub,
   deleteMoviesSubs,
   deleteMembersSubs,
   deleteAllSubs,

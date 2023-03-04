@@ -20,7 +20,7 @@ function EditUser() {
 
   useEffect(async () => {
     let resp = await axios.get(
-      "http://localhost:7000/data/editUser/" + params.id
+      `${process.env.REACT_APP_API_SERVER}/editUser/${params.id}`
     );
 
     setName(resp.data.firstName + " " + resp.data.lastName);
@@ -105,7 +105,7 @@ function EditUser() {
 
         obj = { ...obj, perm };
 
-        await axios.post("http://localhost:7000/data/updateUser", obj);
+        await axios.post(`${process.env.REACT_APP_API_SERVER}/updateUser`, obj);
 
         navigate("/main/manageUsers");
       } else alert("YOU MUST FILL ALL THE FORM!!");

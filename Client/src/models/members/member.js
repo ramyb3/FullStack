@@ -28,7 +28,7 @@ function Member(props) {
     }
 
     let resp = await axios.get(
-      "http://localhost:7000/data/subscriptions/" + params.id
+      `${process.env.REACT_APP_API_SERVER}/subscriptions/${params.id}`
     );
 
     setList(resp.data[3]);
@@ -43,7 +43,7 @@ function Member(props) {
   }, []);
 
   const edit = async () => {
-    await axios.delete("http://localhost:7000/data/deleteMember/" + member.id);
+    await axios.delete(`${process.env.REACT_APP_API_SERVER}/deleteMember/${member.id}`);
   };
 
   const showORhide = (obj) => {
@@ -64,7 +64,7 @@ function Member(props) {
 
   const send = async () => {
     if (sub.movie != "" && sub.date != "") {
-      await axios.post("http://localhost:7000/data/addSubs/", sub);
+      await axios.post(`${process.env.REACT_APP_API_SERVER}/addSubs/`, sub);
 
       navigate("/main/subscriptions");
     } else alert("YOU MUST FILL ALL THE FORM!!");

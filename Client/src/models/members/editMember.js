@@ -24,7 +24,7 @@ function EditMember(props) {
     }
 
     let resp = await axios.get(
-      "http://localhost:7000/data/editMember/" + params.id
+      `${process.env.REACT_APP_API_SERVER}/editMember/${params.id}`
     );
 
     setMember({
@@ -38,7 +38,7 @@ function EditMember(props) {
   const send = async (x) => {
     if (x == 1) {
       if (member.name != "" && member.email != "" && member.city != "") {
-        await axios.post("http://localhost:7000/data/updateMember", member);
+        await axios.post(`${process.env.REACT_APP_API_SERVER}/updateMember`, member);
 
         navigate("/main/subscriptions");
       } else alert("YOU MUST FILL ALL THE FORM!!");

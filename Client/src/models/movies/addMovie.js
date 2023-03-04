@@ -25,7 +25,7 @@ function AddMovie(props) {
   const send = async (x) => {
     if (x == 1) {
       if (movie.name != "" && movie.genres.length != 0 && movie.date != "") {
-        await axios.post("http://localhost:7000/data/addMovie", movie);
+        await axios.post(`${process.env.REACT_APP_API_SERVER}/addMovie`, movie);
 
         navigate("/main/movies");
       } else alert("YOU MUST FILL ALL THE FORM!!");

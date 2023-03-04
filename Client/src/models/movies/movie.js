@@ -26,7 +26,7 @@ function Movie(props) {
     }
 
     let resp = await axios.get(
-      "http://localhost:7000/data/movies/" + params.id
+      `${process.env.REACT_APP_API_SERVER}/movies/${params.id}`
     );
 
     setSubs(resp.data[0]);
@@ -40,7 +40,7 @@ function Movie(props) {
   }, []);
 
   const edit = async () => {
-    await axios.delete("http://localhost:7000/data/deleteMovie/" + movie.id);
+    await axios.delete(`${process.env.REACT_APP_API_SERVER}/deleteMovie/${movie.id}`);
   };
 
   return (

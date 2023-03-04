@@ -7,13 +7,13 @@ function Users() {
   const [add, setAdd] = useState(false);
 
   useEffect(async () => {
-    let resp = await axios.get("http://localhost:7000/data/users");
+    let resp = await axios.get(`${process.env.REACT_APP_API_SERVER}/users`);
 
     setUsers(resp.data);
   }, [users]);
 
   const edit = async (x) => {
-    await axios.delete("http://localhost:7000/data/deleteUser/" + x);
+    await axios.delete(`${process.env.REACT_APP_API_SERVER}/deleteUser/${x}`);
   };
 
   return (

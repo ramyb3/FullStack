@@ -24,7 +24,7 @@ function Movies(props) {
 
   useEffect(async () => {
     if (search == "") {
-      let resp = await axios.get("http://localhost:7000/data");
+      let resp = await axios.get(process.env.REACT_APP_API_SERVER);
 
       setMovies(resp.data[0]);
       setMembers(resp.data[1]);
@@ -33,20 +33,20 @@ function Movies(props) {
   }, [movies || members || subs]);
 
   const edit = async (x) => {
-    await axios.delete("http://localhost:7000/data/deleteMovie/" + x);
+    await axios.delete(`${process.env.REACT_APP_API_SERVER}/deleteMovie/${x}`);
   };
 
   const find = async () => {
     if (search != "") {
       let resp = await axios.post(
-        "http://localhost:7000/data/findMovies/" + search
+        `${process.env.REACT_APP_API_SERVER}/findMovies/${search}`
       );
 
       setMovies(resp.data[0]);
       setMembers(resp.data[1]);
       setSubs(resp.data[2]);
     } else {
-      let resp = await axios.get("http://localhost:7000/data");
+      let resp = await axios.get(process.env.REACT_APP_API_SERVER);
 
       setMovies(resp.data[0]);
       setMembers(resp.data[1]);

@@ -25,7 +25,7 @@ function EditMovie(props) {
     }
 
     let resp = await axios.get(
-      "http://localhost:7000/data/editMovie/" + params.id
+      `${process.env.REACT_APP_API_SERVER}/editMovie/${params.id}`
     );
 
     setMovie({
@@ -40,7 +40,7 @@ function EditMovie(props) {
   const send = async (x) => {
     if (x == 1) {
       if (movie.name != "" && movie.genres.length != 0 && movie.date != "") {
-        await axios.post("http://localhost:7000/data/updateMovie", movie);
+        await axios.post(`${process.env.REACT_APP_API_SERVER}/updateMovie`, movie);
 
         navigate("/main/movies");
       } else alert("YOU MUST FILL ALL THE FORM!!");

@@ -9,7 +9,7 @@ function Create() {
 
   const send = async () => {
     if (user.user != "" && user.psw != "") {
-      let resp = await axios.post("http://localhost:7000/data/create", user);
+      let resp = await axios.post(`${process.env.REACT_APP_API_SERVER}/create`, user);
 
       if (!Array.isArray(resp.data)) alert(resp.data);
       else navigate("/"); //to login

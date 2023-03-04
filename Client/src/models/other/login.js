@@ -11,7 +11,7 @@ function Login(props) {
   const send = async () => {
     setLoading(true);
 
-    let resp = await axios.post("http://localhost:7000/data/main", user);
+    let resp = await axios.post(`${process.env.REACT_APP_API_SERVER}/main`, user);
 
     if (resp.data == "THE USERNAME OR PASSWORD IS INCORRECT!!") {
       alert(resp.data);

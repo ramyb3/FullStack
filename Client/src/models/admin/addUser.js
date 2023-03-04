@@ -67,7 +67,7 @@ function AddUser() {
       ) {
         let obj = { ...user, VS: VS, VM: VM };
 
-        await axios.post("http://localhost:7000/data/addUser", obj);
+        await axios.post(`${process.env.REACT_APP_API_SERVER}/addUser`, obj);
 
         navigate("/main/manageUsers");
       } else alert("YOU MUST FILL ALL THE FORM!!");

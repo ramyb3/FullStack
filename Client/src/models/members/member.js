@@ -1,4 +1,4 @@
-import Button from '../other/main'
+import Button from "../other/main";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
@@ -57,8 +57,9 @@ export default function Member(props) {
       document.getElementById(obj).style.visibility = "visible";
       check = true;
     }
-    if (document.getElementById(obj).style.visibility == "visible" && !check){
-      document.getElementById(obj).style.visibility = "hidden";}
+    if (document.getElementById(obj).style.visibility == "visible" && !check) {
+      document.getElementById(obj).style.visibility = "hidden";
+    }
   };
 
   const send = async () => {
@@ -87,7 +88,10 @@ export default function Member(props) {
         </big>
 
         {props?.data?.perm?.includes("Update Subscriptions") ? (
-          <Button link={`/main/subscriptions/editMember/${member.id}`} text="Edit"/>
+          <Button
+            link={`/main/subscriptions/editMember/${member.id}`}
+            text="Edit"
+          />
         ) : null}
 
         {props?.data?.perm?.includes("Delete Subscriptions") ? (

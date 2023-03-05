@@ -12,7 +12,9 @@ export default function Comp(props) {
         }
       }
 
-      if (check) {break;}
+      if (check) {
+        break;
+      }
     }
   }, [props]);
 

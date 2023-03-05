@@ -32,9 +32,7 @@ export default function App() {
 
         <Route
           path="/main"
-          element={
-            <MainComp data={props} setData={(data) => setProps(data)} />
-          }
+          element={<MainComp data={props} setData={(data) => setProps(data)} />}
         >
           <Route path="movies" element={<MoviesComp data={props} />}>
             <Route path="addMovie" element={<AddMovieComp data={props} />} />
@@ -48,10 +46,7 @@ export default function App() {
             <Route path="addUser" element={<AddUserComp />} />
           </Route>
 
-          <Route
-            path="manageUsers/editUser/:id"
-            element={<EditUserComp />}
-          />
+          <Route path="manageUsers/editUser/:id" element={<EditUserComp />} />
           <Route
             path="movies/editMovie/:id"
             element={<EditMovieComp data={props} />}

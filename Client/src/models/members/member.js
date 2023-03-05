@@ -1,5 +1,5 @@
 import Button from "../other/main";
-import axios from "axios";
+import { apiCalls } from "../other/apiCalls";
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
@@ -26,31 +26,27 @@ export default function Member(props) {
     }
 
     const getSubs = async () => {
-      const resp = await axios.get(
-        `${process.env.REACT_APP_API_SERVER}/subscriptions/${params.id}`
-      );
+      const resp = await apiCalls("get", `subscriptions/${params.id}`);
 
-      setList(resp.data[3]);
-      setMovies(resp.data[2]);
-      setSubs(resp.data[0]);
+      setList(resp[3]);
+      setMovies(resp[2]);
+      setSubs(resp[0]);
       setMember({
-        id: resp.data[1]._id,
-        city: resp.data[1].City,
-        email: resp.data[1].Email,
-        name: resp.data[1].Name,
+        id: resp[1]._id,
+        city: resp[1].City,
+        email: resp[1].Email,
+        name: resp[1].Name,
       });
     };
 
     getSubs();
   }, []);
 
-  const edit = async () => {
-    await axios.delete(
-      `${process.env.REACT_APP_API_SERVER}/deleteMember/${member.id}`
-    );
+  const deleteMember = async () => {
+    await apiCalls("delete", `deleteMember/${member.id}`);
   };
 
-  const showORhide = (obj) => {
+  const showOrHide = (obj) => {
     let check = false;
 
     if (document.getElementById(obj).style.visibility == "hidden") {
@@ -64,8 +60,7 @@ export default function Member(props) {
 
   const send = async () => {
     if (sub.movie != "" && sub.date != "") {
-      await axios.post(`${process.env.REACT_APP_API_SERVER}/addSubs/`, sub);
-
+      await apiCalls("post", "addSubs", sub);
       navigate("/main/subscriptions");
     } else {
       alert("YOU MUST FILL ALL THE FORM!!");
@@ -87,15 +82,19 @@ export default function Member(props) {
           <br />
         </big>
 
-        {props?.data?.perm?.includes("Update Subscriptions") ? (
+        {props.data.perm.includes("Update Subscriptions") ? (
           <Button
             link={`/main/subscriptions/editMember/${member.id}`}
             text="Edit"
           />
         ) : null}
 
-        {props?.data?.perm?.includes("Delete Subscriptions") ? (
-          <Button link="/main/subscriptions" text="Delete" onClick={edit} />
+        {props.data.perm.includes("Delete Subscriptions") ? (
+          <Button
+            link="/main/subscriptions"
+            text="Delete"
+            onClick={deleteMember}
+          />
         ) : null}
         <br />
         <br />
@@ -139,7 +138,7 @@ export default function Member(props) {
             <input
               type="button"
               value="Subscribe to a new movie"
-              onClick={() => showORhide(member.id)}
+              onClick={() => showOrHide(member.id)}
             />
 
             <div id={member.id} style={{ visibility: "hidden" }}>

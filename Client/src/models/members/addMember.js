@@ -1,6 +1,6 @@
+import { apiCalls } from "../other/apiCalls";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
 
 export default function AddMember(props) {
   const navigate = useNavigate();
@@ -18,11 +18,7 @@ export default function AddMember(props) {
   const send = async (method) => {
     if (method) {
       if (member.name != "" && member.city != "" && member.email != "") {
-        await axios.post(
-          `${process.env.REACT_APP_API_SERVER}/addMember`,
-          member
-        );
-
+        await apiCalls("post", "addMember", member);
         navigate("/main/subscriptions");
       } else {
         alert("YOU MUST FILL ALL THE FORM!!");

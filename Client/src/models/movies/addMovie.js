@@ -1,6 +1,6 @@
+import { apiCalls } from "../other/apiCalls";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
 
 export default function AddMovie(props) {
   const navigate = useNavigate();
@@ -25,8 +25,7 @@ export default function AddMovie(props) {
   const send = async (x) => {
     if (x == 1) {
       if (movie.name != "" && movie.genres.length != 0 && movie.date != "") {
-        await axios.post(`${process.env.REACT_APP_API_SERVER}/addMovie`, movie);
-
+        await apiCalls("post", "addMovie", movie);
         navigate("/main/movies");
       } else alert("YOU MUST FILL ALL THE FORM!!");
     }

@@ -1,6 +1,6 @@
+import { apiCalls } from "./apiCalls";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
 
 export default function Create() {
   const navigate = useNavigate();
@@ -8,10 +8,7 @@ export default function Create() {
 
   const send = async () => {
     if (user.user != "" && user.psw != "") {
-      const resp = await axios.post(
-        `${process.env.REACT_APP_API_SERVER}/create`,
-        user
-      );
+      const resp = await apiCalls("post", "create", user);
 
       if (!Array.isArray(resp.data)) {
         alert(resp.data);

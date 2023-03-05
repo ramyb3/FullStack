@@ -1,5 +1,5 @@
+import { apiCalls } from "../other/apiCalls";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import Comp from "./comp1";
 
@@ -15,7 +15,6 @@ export default function Movies(props) {
   useEffect(() => {
     if (props.data.name != "admin") {
       if (Date.now() - props.data.time >= props.data.timeOut) {
-        // check if time over
         alert("YOUR TIME IS UP!!");
         navigate("/");
       }
@@ -24,34 +23,29 @@ export default function Movies(props) {
 
   useEffect(async () => {
     if (search == "") {
-      let resp = await axios.get(process.env.REACT_APP_API_SERVER);
-
-      setMovies(resp.data[0]);
-      setMembers(resp.data[1]);
-      setSubs(resp.data[2]);
+      const resp = await apiCalls("get", "");
+      setMovies(resp[0]);
+      setMembers(resp[1]);
+      setSubs(resp[2]);
     }
   }, [movies || members || subs]);
 
-  const edit = async (x) => {
-    await axios.delete(`${process.env.REACT_APP_API_SERVER}/deleteMovie/${x}`);
+  const edit = async (obj) => {
+    await apiCalls("delete", `deleteMovie/${obj}`);
   };
 
   const find = async () => {
+    let resp;
+
     if (search != "") {
-      let resp = await axios.post(
-        `${process.env.REACT_APP_API_SERVER}/findMovies/${search}`
-      );
-
-      setMovies(resp.data[0]);
-      setMembers(resp.data[1]);
-      setSubs(resp.data[2]);
+      resp = await apiCalls("post", `findMovies/${search}`);
     } else {
-      let resp = await axios.get(process.env.REACT_APP_API_SERVER);
-
-      setMovies(resp.data[0]);
-      setMembers(resp.data[1]);
-      setSubs(resp.data[2]);
+      resp = await apiCalls("get", "");
     }
+
+    setMovies(resp[0]);
+    setMembers(resp[1]);
+    setSubs(resp[2]);
   };
 
   return (

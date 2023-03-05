@@ -1,4 +1,4 @@
-import axios from "axios";
+import { apiCalls } from "./apiCalls";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -10,17 +10,13 @@ export default function Login(props) {
   const send = async () => {
     setLoading(true);
 
-    const resp = await axios.post(
-      `${process.env.REACT_APP_API_SERVER}/main`,
-      user
-    );
+    const resp = await apiCalls("post", "main", user);
 
-    if (resp.data == "THE USERNAME OR PASSWORD IS INCORRECT!!") {
-      alert(resp.data);
+    if (resp == "THE USERNAME OR PASSWORD IS INCORRECT!!") {
+      alert(resp);
       setLoading(false);
     } else {
-      props.setData(resp.data);
-
+      props.setData(resp);
       navigate("/main");
     }
   };

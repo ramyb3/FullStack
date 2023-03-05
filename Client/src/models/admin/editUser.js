@@ -1,6 +1,6 @@
+import { apiCalls } from "../other/apiCalls";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 
 export default function EditUser() {
   const navigate = useNavigate();
@@ -18,19 +18,17 @@ export default function EditUser() {
 
   useEffect(() => {
     const editUser = async () => {
-      const resp = await axios.get(
-        `${process.env.REACT_APP_API_SERVER}/editUser/${params.id}`
-      );
+      const resp = await apiCalls("get", `editUser/${params.id}`);
 
-      setName(`${resp.data.firstName} ${resp.data.lastName}`);
-      setPerm(resp.data.perm);
+      setName(`${resp.firstName} ${resp.lastName}`);
+      setPerm(resp.perm);
       setUser({
-        date: resp.data.date,
-        Fname: resp.data.firstName,
-        id: resp.data.id,
-        Lname: resp.data.lastName,
-        session: resp.data.session,
-        Uname: resp.data.user,
+        date: resp.date,
+        Fname: resp.firstName,
+        id: resp.id,
+        Lname: resp.lastName,
+        session: resp.session,
+        Uname: resp.user,
       });
     };
 
@@ -70,8 +68,8 @@ export default function EditUser() {
       ) {
         let obj = user;
         obj = { ...obj, perm };
-        await axios.post(`${process.env.REACT_APP_API_SERVER}/updateUser`, obj);
 
+        await apiCalls("post", "updateUser", obj);
         navigate("/main/manageUsers");
       } else {
         alert("YOU MUST FILL ALL THE FORM!!");

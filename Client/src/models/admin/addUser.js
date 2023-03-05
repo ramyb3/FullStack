@@ -1,6 +1,6 @@
+import { apiCalls } from "../other/apiCalls";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
 
 export default function AddUser() {
   const navigate = useNavigate();
@@ -48,7 +48,7 @@ export default function AddUser() {
         user.session != 0
       ) {
         const obj = { ...user, VS, VM };
-        await axios.post(`${process.env.REACT_APP_API_SERVER}/addUser`, obj);
+        await apiCalls("post", "addUser", obj);
         navigate("/main/manageUsers");
       } else {
         alert("YOU MUST FILL ALL THE FORM!!");

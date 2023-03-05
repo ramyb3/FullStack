@@ -1,5 +1,5 @@
 import { Button } from "../other/main";
-import axios from "axios";
+import { apiCalls } from "../other/apiCalls";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
@@ -9,17 +9,15 @@ export default function Users() {
 
   useEffect(() => {
     const getUsers = async () => {
-      const resp = await axios.get(`${process.env.REACT_APP_API_SERVER}/users`);
-      setUsers(resp.data);
+      const resp = await apiCalls("get", "users");
+      setUsers(resp);
     };
 
     getUsers();
   }, [users]);
 
   const edit = async (user) => {
-    await axios.delete(
-      `${process.env.REACT_APP_API_SERVER}/deleteUser/${user}`
-    );
+    await apiCalls("delete", `deleteUser/${user}`);
   };
 
   return (

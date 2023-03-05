@@ -1,6 +1,6 @@
+import { apiCalls } from "../other/apiCalls";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 
 export default function EditMovie(props) {
   const navigate = useNavigate();
@@ -24,27 +24,21 @@ export default function EditMovie(props) {
       }
     }
 
-    let resp = await axios.get(
-      `${process.env.REACT_APP_API_SERVER}/editMovie/${params.id}`
-    );
+    const resp = await apiCalls("get", `editMovie/${params.id}`);
 
     setMovie({
-      genres: resp.data[0].Genres,
-      name: resp.data[0].Name,
-      id: resp.data[0]._id,
-      image: resp.data[0].Image,
-      date: resp.data[1],
+      genres: resp[0].Genres,
+      name: resp[0].Name,
+      id: resp[0]._id,
+      image: resp[0].Image,
+      date: resp[1],
     });
   }, []);
 
   const send = async (x) => {
     if (x == 1) {
       if (movie.name != "" && movie.genres.length != 0 && movie.date != "") {
-        await axios.post(
-          `${process.env.REACT_APP_API_SERVER}/updateMovie`,
-          movie
-        );
-
+        await apiCalls("post", "updateMovie", movie);
         navigate("/main/movies");
       } else alert("YOU MUST FILL ALL THE FORM!!");
     }

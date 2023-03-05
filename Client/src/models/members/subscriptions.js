@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { apiCalls } from "../other/apiCalls";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import Comp1 from "./comp2";
 import Comp2 from "./comp3";
@@ -24,15 +24,14 @@ export default function Subs(props) {
   }, []);
 
   useEffect(async () => {
-    let resp = await axios.get(process.env.REACT_APP_API_SERVER);
-
-    setMovies(resp.data[0]);
-    setMembers(resp.data[1]);
-    setSubs(resp.data[2]);
+    const resp = await apiCalls("get", "");
+    setMovies(resp[0]);
+    setMembers(resp[1]);
+    setSubs(resp[2]);
   }, [movies || members || subs]);
 
-  const edit = async (x) => {
-    await axios.delete(`${process.env.REACT_APP_API_SERVER}/deleteMember/${x}`);
+  const edit = async (obj) => {
+    await apiCalls("delete", `deleteMember/${obj}`);
   };
 
   const showORhide = (obj) => {
@@ -52,9 +51,11 @@ export default function Subs(props) {
   };
 
   const send = async () => {
-    if (sub.movie != "" && sub.date != "")
-      await axios.post(`${process.env.REACT_APP_API_SERVER}/addSubs/`, sub);
-    else alert("YOU MUST FILL ALL THE FORM!!");
+    if (sub.movie != "" && sub.date != "") {
+      await apiCalls("post", "addSubs", sub);
+    } else {
+      alert("YOU MUST FILL ALL THE FORM!!");
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import axios from "axios";
+import { apiCalls } from "../other/apiCalls";
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
@@ -19,30 +19,25 @@ export default function Movie(props) {
   useEffect(async () => {
     if (props.data.name != "admin") {
       if (Date.now() - props.data.time >= props.data.timeOut) {
-        // check if time over
         alert("YOUR TIME IS UP!!");
         navigate("/");
       }
     }
 
-    let resp = await axios.get(
-      `${process.env.REACT_APP_API_SERVER}/movies/${params.id}`
-    );
+    const resp = await apiCalls("get", `movies/${params.id}`);
 
-    setSubs(resp.data[0]);
+    setSubs(resp[0]);
     setMovie({
-      id: resp.data[1]._id,
-      name: resp.data[1].Name,
-      genres: resp.data[1].Genres,
-      image: resp.data[1].Image,
-      date: resp.data[1].Premiered,
+      id: resp[1]._id,
+      name: resp[1].Name,
+      genres: resp[1].Genres,
+      image: resp[1].Image,
+      date: resp[1].Premiered,
     });
   }, []);
 
   const edit = async () => {
-    await axios.delete(
-      `${process.env.REACT_APP_API_SERVER}/deleteMovie/${movie.id}`
-    );
+    await apiCalls("delete", `deleteMovie/${movie.id}`);
   };
 
   return (

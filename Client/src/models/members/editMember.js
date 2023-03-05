@@ -1,6 +1,6 @@
+import { apiCalls } from "../other/apiCalls";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 
 export default function EditMember(props) {
   const navigate = useNavigate();
@@ -21,15 +21,13 @@ export default function EditMember(props) {
     }
 
     const getMember = async () => {
-      const resp = await axios.get(
-        `${process.env.REACT_APP_API_SERVER}/editMember/${params.id}`
-      );
+      const resp = await apiCalls("get", `editMember/${params.id}`);
 
       setMember({
-        name: resp.data.Name,
-        id: resp.data._id,
-        email: resp.data.Email,
-        city: resp.data.City,
+        name: resp.Name,
+        id: resp._id,
+        email: resp.Email,
+        city: resp.City,
       });
     };
 
@@ -39,11 +37,7 @@ export default function EditMember(props) {
   const send = async (method) => {
     if (method) {
       if (member.name != "" && member.email != "" && member.city != "") {
-        await axios.post(
-          `${process.env.REACT_APP_API_SERVER}/updateMember`,
-          member
-        );
-
+        await apiCalls("post", "updateMember", member);
         navigate("/main/subscriptions");
       } else {
         alert("YOU MUST FILL ALL THE FORM!!");

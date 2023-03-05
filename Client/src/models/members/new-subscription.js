@@ -19,7 +19,7 @@ export default function NewSubscription(props) {
   }, [props]);
 
   return (
-    <select onChange={(e) => props.setNewSub(e)}>
+    <select onChange={(e) => props.setNewSub(e.target.value)}>
       <option value="">--Select Movie--</option>
 
       {list.map((data, index) => {

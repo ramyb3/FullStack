@@ -13,20 +13,21 @@ export default function Subs(props) {
   const [add, setAdd] = useState(false);
   const [newSub, setNewSub] = useState({ id: 0, movie: "", date: "" });
 
-  useEffect(() => {
-    const getData = async () => {
-      const resp = await apiCalls("get", "");
-      setMovies(resp[0]);
-      setMembers(resp[1]);
-      setSubs(resp[2]);
-    };
+  const getData = async () => {
+    const resp = await apiCalls("get", "");
+    setMovies(resp[0]);
+    setMembers(resp[1]);
+    setSubs(resp[2]);
+  };
 
+  useEffect(() => {
     sessionCheck(props.data);
     getData();
-  }, []); //movies, members, subs
+  }, []);
 
   const deleteMember = async (obj) => {
     await apiCalls("delete", `deleteMember/${obj}`);
+    await getData();
   };
 
   const showORhide = (obj) => {
@@ -36,9 +37,10 @@ export default function Subs(props) {
         : "hidden";
   };
 
-  const send = async () => {
+  const addSub = async () => {
     if (newSub.movie != "" && newSub.date != "") {
       await apiCalls("post", "addSubs", newSub);
+      await getData();
     } else {
       alert("YOU MUST FILL ALL THE FORM!!");
     }
@@ -168,7 +170,7 @@ export default function Subs(props) {
                             })
                           }
                         />
-                        <Button link="" onClick={send} text="Subscribe" />
+                        <Button link="" onClick={addSub} text="Subscribe" />
                       </div>
                     </div>
                   ) : null}

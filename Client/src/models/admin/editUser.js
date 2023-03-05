@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 export default function EditUser() {
   const navigate = useNavigate();
   const params = useParams();
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [perm, setPerm] = useState([]);
   const [user, setUser] = useState({
@@ -30,8 +31,11 @@ export default function EditUser() {
         session: resp.session,
         Uname: resp.user,
       });
+
+      setLoading(false);
     };
 
+    setLoading(true);
     editUser();
   }, []);
 
@@ -54,11 +58,18 @@ export default function EditUser() {
   //check if main checkbox on
   const clearCheckboxes = (e, label) => {
     const string = label.includes("Movies") ? "Movies" : "Subscriptions";
-    const arr = perm.filter((data) => !data.includes(string));
+    let arr;
+
+    if (e.target.checked) {
+      arr = [...perm, label];
+    } else {
+      arr = perm.filter((data) => !data.includes(string));
+    }
+
     setPerm(arr);
   };
 
-  const send = async (method) => {
+  const updateUser = async (method) => {
     if (method) {
       if (
         user.Fname != "" &&
@@ -66,6 +77,8 @@ export default function EditUser() {
         user.Uname != "" &&
         user.session != 0
       ) {
+        setLoading(true);
+
         let obj = user;
         obj = { ...obj, perm };
 
@@ -177,9 +190,11 @@ export default function EditUser() {
         })}
 
         <div style={{ display: "flex", gap: "10px", paddingTop: "15px" }}>
-          <button onClick={() => send(true)}>Update</button>
-          <button onClick={() => send(false)}>Cancel</button>
+          <button onClick={() => updateUser(true)}>Update</button>
+          <button onClick={() => updateUser(false)}>Cancel</button>
         </div>
+
+        {loading ? <h3>Loading...</h3> : null}
       </div>
     </div>
   );

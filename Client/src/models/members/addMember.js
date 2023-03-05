@@ -6,6 +6,7 @@ export default function AddMember(props) {
   const navigate = useNavigate();
   const { sessionCheck } = useSessionCheck();
   const [member, setMember] = useState({ name: "", city: "", email: "" });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     sessionCheck(props.data);
@@ -14,6 +15,7 @@ export default function AddMember(props) {
   const send = async (method) => {
     if (method) {
       if (member.name != "" && member.city != "" && member.email != "") {
+        setLoading(true);
         await apiCalls("post", "addMember", member);
         navigate("/main/subscriptions");
       } else {
@@ -61,6 +63,7 @@ export default function AddMember(props) {
         <button onClick={() => send(true)}>Save</button>
         <button onClick={() => send(false)}>Cancel</button>
       </div>
+      {loading ? <h3>Loading...</h3> : null}
     </div>
   );
 }

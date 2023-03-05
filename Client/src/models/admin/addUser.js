@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function AddUser() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [VS, setVS] = useState(false);
   const [VM, setVM] = useState(false);
   const [user, setUser] = useState({
@@ -47,6 +48,8 @@ export default function AddUser() {
         user.Uname != "" &&
         user.session != 0
       ) {
+        setLoading(true);
+
         const obj = { ...user, VS, VM };
         await apiCalls("post", "addUser", obj);
         navigate("/main/manageUsers");
@@ -171,6 +174,7 @@ export default function AddUser() {
         <button onClick={() => send(true)}>Save</button>
         <button onClick={() => send(false)}>Cancel</button>
       </div>
+      {loading ? <h3>Loading...</h3> : null}
     </div>
   );
 }

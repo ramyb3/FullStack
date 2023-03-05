@@ -6,6 +6,7 @@ export default function EditMember(props) {
   const navigate = useNavigate();
   const { sessionCheck } = useSessionCheck();
   const params = useParams();
+  const [loading, setLoading] = useState(false);
   const [member, setMember] = useState({
     name: "",
     id: "",
@@ -23,15 +24,19 @@ export default function EditMember(props) {
         email: resp.Email,
         city: resp.City,
       });
+
+      setLoading(false);
     };
 
     sessionCheck(props.data);
+    setLoading(true);
     getMember();
   }, []);
 
   const send = async (method) => {
     if (method) {
       if (member.name != "" && member.email != "" && member.city != "") {
+        setLoading(true);
         await apiCalls("post", "updateMember", member);
         navigate("/main/subscriptions");
       } else {
@@ -79,6 +84,7 @@ export default function EditMember(props) {
           <button onClick={() => send(true)}>Update</button>
           <button onClick={() => send(false)}>Cancel</button>
         </div>
+        {loading ? <h3>Loading...</h3> : null}
       </div>
     </div>
   );

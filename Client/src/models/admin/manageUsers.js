@@ -6,18 +6,22 @@ import { Outlet } from "react-router-dom";
 export default function Users() {
   const [users, setUsers] = useState([]);
   const [add, setAdd] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const getUsers = async () => {
+    const resp = await apiCalls("get", "users");
+    setUsers(resp);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const getUsers = async () => {
-      const resp = await apiCalls("get", "users");
-      setUsers(resp);
-    };
-
+    setLoading(true);
     getUsers();
   }, []);
 
   const deleteUser = async (user) => {
     await apiCalls("delete", `deleteUser/${user}`);
+    await getUsers();
   };
 
   return (
@@ -25,55 +29,68 @@ export default function Users() {
       <div className="flex">
         <h2>All Users Page</h2>
         <div style={{ display: "flex", gap: "10px" }}>
-          <Button link="" text="All Users" onClick={() => setAdd(false)} />
+          <Button
+            link=""
+            text="All Users"
+            onClick={() => {
+              setAdd(false);
+              setLoading(true);
+              getUsers();
+            }}
+          />
           <Button link="addUser" text="Add User" onClick={() => setAdd(true)} />
         </div>
+        {loading ? <h3>Loading...</h3> : null}
       </div>
 
       <Outlet />
 
       {!add
         ? users.map((item, index) => {
-            return (
-              <div key={index} style={{ marginBottom: "15px" }}>
-                <div className="box1 flex">
-                  <Span text="Name" data={item.name} />
-                  <Span text="User Name" data={item.user} />
-                  {item.user != "admin" ? (
-                    <Span
-                      text="Session Timeout (Minutes)"
-                      data={item.session}
-                    />
-                  ) : null}
-                  <Span text="Created Date" data={item.date} />
-                  <b style={{ paddingTop: "10px" }}>Permissions:</b>
-                  {item.perm.map((string, index) => {
-                    return `${string}${
-                      index != item.perm.length - 1 ? ", " : ""
-                    }`;
-                  })}
-                  {item.user != "admin" ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "10px",
-                        paddingTop: "15px",
-                      }}
-                    >
-                      <Button link={`editUser/${item.id}`} text="Edit" />
-                      <Button
-                        link=""
-                        text="Delete"
-                        onClick={() => deleteUser(item.id)}
-                      />
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            );
+            return <User key={index} func={deleteUser} data={item} />;
           })
         : null}
     </>
+  );
+}
+
+function User(props) {
+  const [loading, setLoading] = useState(false);
+
+  return (
+    <div className="box1 flex" style={{ marginBottom: "15px" }}>
+      <Span text="Name" data={props.data.name} />
+      <Span text="User Name" data={props.data.user} />
+      {props.data.user != "admin" ? (
+        <Span text="Session Timeout (Minutes)" data={props.data.session} />
+      ) : null}
+      <Span text="Created Date" data={props.data.date} />
+      <b style={{ paddingTop: "10px" }}>Permissions:</b>
+      {props.data.perm.map((string, index) => {
+        return `${string}${index != props.data.perm.length - 1 ? ", " : ""}`;
+      })}
+      {props.data.user != "admin" ? (
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            paddingTop: "15px",
+          }}
+        >
+          <Button link={`editUser/${props.data.id}`} text="Edit" />
+          <Button
+            link=""
+            text="Delete"
+            onClick={() => {
+              setLoading(true);
+              props.func(props.data.id);
+            }}
+          />
+        </div>
+      ) : null}
+
+      {loading ? <h3>Loading...</h3> : null}
+    </div>
   );
 }
 

@@ -5,13 +5,16 @@ import { useState } from "react";
 export default function Create() {
   const navigate = useNavigate();
   const [user, setUser] = useState({ user: "", psw: "" });
+  const [loading, setLoading] = useState(false);
 
-  const send = async () => {
+  const create = async () => {
     if (user.user != "" && user.psw != "") {
+      setLoading(true);
+
       const resp = await apiCalls("post", "create", user);
 
-      if (!Array.isArray(resp.data)) {
-        alert(resp.data);
+      if (!Array.isArray(resp)) {
+        alert(resp);
       } else {
         navigate("/");
       }
@@ -33,7 +36,8 @@ export default function Create() {
         type="password"
         onChange={(e) => setUser({ ...user, psw: e.target.value })}
       />
-      <button onClick={send}>Create</button>
+      <button onClick={create}>Create</button>
+      {loading ? <h3>Loading...</h3> : null}
     </div>
   );
 }

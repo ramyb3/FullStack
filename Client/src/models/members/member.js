@@ -1,45 +1,47 @@
+import Button from '../other/main'
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
 export default function Member(props) {
   const params = useParams();
-
   const navigate = useNavigate();
-
+  const [subMovies, setSubs] = useState([]);
+  const [movies, setMovies] = useState([]);
+  const [list, setList] = useState([]);
+  const [sub, setNew] = useState({ id: 0, movie: "", date: "" });
   const [member, setMember] = useState({
     id: 0,
     city: "",
     email: "",
     name: "",
   });
-  const [subMovies, setSubs] = useState([]);
-  const [movies, setMovies] = useState([]);
-  const [list, setList] = useState([]);
-  const [sub, setNew] = useState({ id: 0, movie: "", date: "" });
 
-  useEffect(async () => {
-    if (props.props.name != "admin") {
-      if (Date.now() - props.props.time >= props.props.timeOut) {
-        // check if time over
+  useEffect(() => {
+    if (props.data.name != "admin") {
+      if (Date.now() - props.data.time >= props.data.timeOut) {
         alert("YOUR TIME IS UP!!");
         navigate("/");
       }
     }
 
-    let resp = await axios.get(
-      `${process.env.REACT_APP_API_SERVER}/subscriptions/${params.id}`
-    );
+    const getSubs = async () => {
+      const resp = await axios.get(
+        `${process.env.REACT_APP_API_SERVER}/subscriptions/${params.id}`
+      );
 
-    setList(resp.data[3]);
-    setMovies(resp.data[2]);
-    setSubs(resp.data[0]);
-    setMember({
-      id: resp.data[1]._id,
-      city: resp.data[1].City,
-      email: resp.data[1].Email,
-      name: resp.data[1].Name,
-    });
+      setList(resp.data[3]);
+      setMovies(resp.data[2]);
+      setSubs(resp.data[0]);
+      setMember({
+        id: resp.data[1]._id,
+        city: resp.data[1].City,
+        email: resp.data[1].Email,
+        name: resp.data[1].Name,
+      });
+    };
+
+    getSubs();
   }, []);
 
   const edit = async () => {
@@ -53,15 +55,10 @@ export default function Member(props) {
 
     if (document.getElementById(obj).style.visibility == "hidden") {
       document.getElementById(obj).style.visibility = "visible";
-
       check = true;
     }
-
-    if (
-      document.getElementById(obj).style.visibility == "visible" &&
-      check == false
-    )
-      document.getElementById(obj).style.visibility = "hidden";
+    if (document.getElementById(obj).style.visibility == "visible" && !check){
+      document.getElementById(obj).style.visibility = "hidden";}
   };
 
   const send = async () => {
@@ -69,7 +66,9 @@ export default function Member(props) {
       await axios.post(`${process.env.REACT_APP_API_SERVER}/addSubs/`, sub);
 
       navigate("/main/subscriptions");
-    } else alert("YOU MUST FILL ALL THE FORM!!");
+    } else {
+      alert("YOU MUST FILL ALL THE FORM!!");
+    }
   };
 
   return (
@@ -87,16 +86,12 @@ export default function Member(props) {
           <br />
         </big>
 
-        {props.props.perm.includes("Update Subscriptions") ? (
-          <Link to={"/main/subscriptions/editMember/" + member.id}>
-            <input type="button" value="Edit" />
-          </Link>
+        {props?.data?.perm?.includes("Update Subscriptions") ? (
+          <Button link={`/main/subscriptions/editMember/${member.id}`} text="Edit"/>
         ) : null}
 
-        {props.props.perm.includes("Delete Subscriptions") ? (
-          <Link to={"/main/subscriptions"}>
-            <input onClick={edit} type="button" value="Delete" />
-          </Link>
+        {props?.data?.perm?.includes("Delete Subscriptions") ? (
+          <Button link="/main/subscriptions" text="Delete" onClick={edit} />
         ) : null}
         <br />
         <br />

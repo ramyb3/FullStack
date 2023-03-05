@@ -48,7 +48,7 @@ export default function Users() {
                     />
                   ) : null}
                   <Span text="Created Date" data={item.date} />
-                  <b style={{paddingTop:"10px"}}>Permissions:</b>
+                  <b style={{ paddingTop: "10px" }}>Permissions:</b>
                   {item.perm.map((string, index) => {
                     return `${string}${
                       index != item.perm.length - 1 ? ", " : ""

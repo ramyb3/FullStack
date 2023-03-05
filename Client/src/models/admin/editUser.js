@@ -142,7 +142,7 @@ export default function EditUser() {
     <div className="flex">
       <h2>Edit User Page: {name}</h2>
 
-      <div className="box flex" style={{ gap: "10px", paddingTop:"10px" }}>
+      <div className="box flex" style={{ gap: "10px", paddingTop: "10px" }}>
         {inputs.map((input, index) => {
           return (
             <span key={index}>

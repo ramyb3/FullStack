@@ -17,8 +17,8 @@ export default function Movie(props) {
   const [subs, setSubs] = useState([]);
 
   useEffect(async () => {
-    if (props.props.name != "admin") {
-      if (Date.now() - props.props.time >= props.props.timeOut) {
+    if (props.data.name != "admin") {
+      if (Date.now() - props.data.time >= props.data.timeOut) {
         // check if time over
         alert("YOUR TIME IS UP!!");
         navigate("/");
@@ -69,13 +69,13 @@ export default function Movie(props) {
         <br />
         <br />
 
-        {props.props.perm.includes("Update Movies") ? (
+        {props.data.perm.includes("Update Movies") ? (
           <Link to={"/main/movies/editMovie/" + movie.id}>
             <input type="button" value="Edit" />
           </Link>
         ) : null}
 
-        {props.props.perm.includes("Delete Movies") ? (
+        {props.data.perm.includes("Delete Movies") ? (
           <Link to="/main/movies">
             <input onClick={edit} type="button" value="Delete" />
           </Link>

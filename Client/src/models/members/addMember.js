@@ -4,21 +4,19 @@ import axios from "axios";
 
 export default function AddMember(props) {
   const navigate = useNavigate();
-
   const [member, setMember] = useState({ name: "", city: "", email: "" });
 
   useEffect(() => {
-    if (props.props.name != "admin") {
-      if (Date.now() - props.props.time >= props.props.timeOut) {
-        // check if time over
+    if (props.data.name != "admin") {
+      if (Date.now() - props.data.time >= props.data.timeOut) {
         alert("YOUR TIME IS UP!!");
         navigate("/");
       }
     }
   }, []);
 
-  const send = async (x) => {
-    if (x == 1) {
+  const send = async (method) => {
+    if (method) {
       if (member.name != "" && member.city != "" && member.email != "") {
         await axios.post(
           `${process.env.REACT_APP_API_SERVER}/addMember`,
@@ -26,43 +24,50 @@ export default function AddMember(props) {
         );
 
         navigate("/main/subscriptions");
-      } else alert("YOU MUST FILL ALL THE FORM!!");
+      } else {
+        alert("YOU MUST FILL ALL THE FORM!!");
+      }
+    } else {
+      navigate("/main/subscriptions");
     }
-
-    if (x == 2) navigate("/main/subscriptions");
   };
 
+  const inputs = [
+    {
+      placeholder: "Enter Name",
+      onChange: "name",
+    },
+    {
+      placeholder: "Enter Email",
+      onChange: "email",
+      type: "email",
+    },
+    {
+      placeholder: "Enter City",
+      onChange: "city",
+    },
+  ];
+
   return (
-    <div style={{ textAlign: "center" }}>
-      <div className="box">
-        <h2>Add Member Page</h2>
+    <div className="box flex" style={{ gap: "10px" }}>
+      <h2>Add Member Page</h2>
 
-        <input
-          placeholder="Enter Name"
-          type="text"
-          onChange={(e) => setMember({ ...member, name: e.target.value })}
-        />
-        <br />
+      {inputs.map((input, index) => {
+        return (
+          <input
+            key={index}
+            type={input.type || "text"}
+            onChange={(e) =>
+              setMember({ ...member, [input.onChange]: e.target.value })
+            }
+            placeholder={input.placeholder}
+          />
+        );
+      })}
 
-        <input
-          placeholder="Enter Email"
-          type="email"
-          onChange={(e) => setMember({ ...member, email: e.target.value })}
-        />
-        <br />
-
-        <input
-          placeholder="Enter City"
-          type="text"
-          onChange={(e) => setMember({ ...member, city: e.target.value })}
-        />
-        <br />
-        <br />
-
-        <input type="button" value="Save" onClick={() => send(1)} />
-        <input type="button" value="Cancel" onClick={() => send(2)} />
-        <br />
-        <br />
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button onClick={() => send(true)}>Save</button>
+        <button onClick={() => send(false)}>Cancel</button>
       </div>
     </div>
   );

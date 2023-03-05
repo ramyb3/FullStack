@@ -19,7 +19,7 @@ export default function Login(props) {
       alert(resp.data);
       setLoading(false);
     } else {
-      props.send(resp.data);
+      props.setProps(resp.data);
 
       navigate("/main");
     }

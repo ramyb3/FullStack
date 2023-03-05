@@ -26,22 +26,22 @@ export default function App() {
       <Routes>
         <Route
           path="/"
-          element={<LoginComp send={(data) => setProps(data)} />}
+          element={<LoginComp setData={(data) => setProps(data)} />}
         />
         <Route path="/create" element={<CreateComp />} />
 
         <Route
           path="/main"
           element={
-            <MainComp props={props} callback={(data) => setProps(data)} />
+            <MainComp data={props} setData={(data) => setProps(data)} />
           }
         >
-          <Route path="movies" element={<MoviesComp props={props} />}>
-            <Route path="addMovie" element={<AddMovieComp props={props} />} />
+          <Route path="movies" element={<MoviesComp data={props} />}>
+            <Route path="addMovie" element={<AddMovieComp data={props} />} />
           </Route>
 
-          <Route path="subscriptions" element={<SubsComp props={props} />}>
-            <Route path="addMember" element={<AddMemberComp props={props} />} />
+          <Route path="subscriptions" element={<SubsComp data={props} />}>
+            <Route path="addMember" element={<AddMemberComp data={props} />} />
           </Route>
 
           <Route path="manageUsers" element={<UsersComp />}>
@@ -50,21 +50,21 @@ export default function App() {
 
           <Route
             path="manageUsers/editUser/:id"
-            element={<EditUserComp props={props} />}
+            element={<EditUserComp />}
           />
           <Route
             path="movies/editMovie/:id"
-            element={<EditMovieComp props={props} />}
+            element={<EditMovieComp data={props} />}
           />
           <Route
             path="subscriptions/editMember/:id"
-            element={<EditMemberComp props={props} />}
+            element={<EditMemberComp data={props} />}
           />
 
-          <Route path="movies/:id" element={<MovieComp props={props} />} />
+          <Route path="movies/:id" element={<MovieComp data={props} />} />
           <Route
             path="subscriptions/:id"
-            element={<MemberComp props={props} />}
+            element={<MemberComp data={props} />}
           />
         </Route>
       </Routes>

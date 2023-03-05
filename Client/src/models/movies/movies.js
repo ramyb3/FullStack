@@ -13,8 +13,8 @@ export default function Movies(props) {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    if (props.props.name != "admin") {
-      if (Date.now() - props.props.time >= props.props.timeOut) {
+    if (props.data.name != "admin") {
+      if (Date.now() - props.data.time >= props.data.timeOut) {
         // check if time over
         alert("YOUR TIME IS UP!!");
         navigate("/");
@@ -58,7 +58,7 @@ export default function Movies(props) {
     <div>
       <h2 style={{ textAlign: "center" }}>Movies Page</h2>
 
-      {props.props.perm.includes("Create Movies") ? (
+      {props.data.perm.includes("Create Movies") ? (
         <div style={{ textAlign: "center" }}>
           <Link to="">
             <input
@@ -132,13 +132,13 @@ export default function Movies(props) {
                   <br />
                   <br />
 
-                  {props.props.perm.includes("Update Movies") ? (
+                  {props.data.perm.includes("Update Movies") ? (
                     <Link to={"editMovie/" + item._id}>
                       <input type="button" value="Edit" />
                     </Link>
                   ) : null}
 
-                  {props.props.perm.includes("Delete Movies") ? (
+                  {props.data.perm.includes("Delete Movies") ? (
                     <Link to="">
                       <input
                         onClick={() => edit(item._id)}
@@ -150,11 +150,11 @@ export default function Movies(props) {
                   <br />
                   <br />
 
-                  {props.props.perm.includes("View Subscriptions") ? (
+                  {props.data.perm.includes("View Subscriptions") ? (
                     <div className="box2">
                       <big>
                         <b>
-                          <Comp props={item} subs={subs} />
+                          <Comp data={item} subs={subs} />
                         </b>
 
                         {subs.map((i) => {

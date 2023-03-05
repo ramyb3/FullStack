@@ -14,8 +14,8 @@ export default function Subs(props) {
   const [sub, setNew] = useState({ id: 0, movie: "", date: "" });
 
   useEffect(() => {
-    if (props.props.name != "admin") {
-      if (Date.now() - props.props.time >= props.props.timeOut) {
+    if (props.data.name != "admin") {
+      if (Date.now() - props.data.time >= props.data.timeOut) {
         // check if time over
         alert("YOUR TIME IS UP!!");
         navigate("/");
@@ -61,7 +61,7 @@ export default function Subs(props) {
     <div>
       <h2 style={{ textAlign: "center" }}>Subscriptions Page</h2>
 
-      {props.props.perm.includes("Create Subscriptions") ? (
+      {props.data.perm.includes("Create Subscriptions") ? (
         <div style={{ textAlign: "center" }}>
           <Link to="">
             <input
@@ -100,13 +100,13 @@ export default function Subs(props) {
                     <br />
                   </big>
 
-                  {props.props.perm.includes("Update Subscriptions") ? (
+                  {props.data.perm.includes("Update Subscriptions") ? (
                     <Link to={"editMember/" + item._id}>
                       <input type="button" value="Edit" />
                     </Link>
                   ) : null}
 
-                  {props.props.perm.includes("Delete Subscriptions") ? (
+                  {props.data.perm.includes("Delete Subscriptions") ? (
                     <Link to="">
                       <input
                         onClick={() => edit(item._id)}
@@ -118,11 +118,11 @@ export default function Subs(props) {
                   <br />
                   <br />
 
-                  {props.props.perm.includes("View Movies") ? (
+                  {props.data.perm.includes("View Movies") ? (
                     <div className="box2" style={{ width: "26em" }}>
                       <big>
                         <b>
-                          <Comp1 props={item} subs={subs} />
+                          <Comp1 data={item} subs={subs} />
                         </b>
                         <br />
 
@@ -180,7 +180,7 @@ export default function Subs(props) {
 
                           <Comp2
                             callback={(data) => setNew({ ...sub, movie: data })}
-                            props={item}
+                            data={item}
                             movies={movies}
                             subs={subs}
                           />

@@ -6,31 +6,29 @@ export default function Comp(props) {
   useEffect(() => {
     setList(props.movies);
 
-    let temp = [];
+    const arr = [];
+    const sub = props.subs.find((data) => data.MemberId == props.data._id);
 
-    let sub = props.subs.find((x) => x.MemberId == props.props._id);
+    if (sub) {
+      for (let i = 0; i < sub.Movies.length; i++) {
+        arr.push(sub.Movies[i].MovieId);
+      }
 
-    if (sub != undefined) {
-      for (var i = 0; i < sub.Movies.length; i++)
-        temp.push(sub.Movies[i].MovieId);
-
-      setList(props.movies.filter((x) => !temp.includes(x._id)));
+      setList(props.movies.filter((data) => !arr.includes(data._id)));
     }
   }, [props]);
 
-  const send = (e) => {
-    props.callback(e);
-  };
-
   return (
-    <div>
-      <select onChange={(e) => send(e.target.value)}>
-        <option value="">--Select Movie--</option>
+    <select onChange={(e) => props.callback(e)}>
+      <option value="">--Select Movie--</option>
 
-        {list.map((i) => {
-          return <option value={i.Name}> {i.Name} </option>;
-        })}
-      </select>
-    </div>
+      {list.map((data, index) => {
+        return (
+          <option key={index} value={data.Name}>
+            {data.Name}
+          </option>
+        );
+      })}
+    </select>
   );
 }

@@ -13,8 +13,8 @@ export default function AddMovie(props) {
   });
 
   useEffect(() => {
-    if (props.props.name != "admin") {
-      if (Date.now() - props.props.time >= props.props.timeOut) {
+    if (props.data.name != "admin") {
+      if (Date.now() - props.data.time >= props.data.timeOut) {
         // check if time over
         alert("YOUR TIME IS UP!!");
         navigate("/");

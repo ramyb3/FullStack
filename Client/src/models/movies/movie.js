@@ -1,12 +1,12 @@
-import { apiCalls } from "../other/apiCalls";
+import { apiCalls, useSessionCheck } from "../other/functions";
 import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { Button } from "../other/main";
 
 export default function Movie(props) {
   const params = useParams();
-
-  const navigate = useNavigate();
-
+  const { sessionCheck } = useSessionCheck();
+  const [subs, setSubs] = useState([]);
   const [movie, setMovie] = useState({
     id: 0,
     name: "",
@@ -14,26 +14,23 @@ export default function Movie(props) {
     image: "",
     date: "",
   });
-  const [subs, setSubs] = useState([]);
 
-  useEffect(async () => {
-    if (props.data.name != "admin") {
-      if (Date.now() - props.data.time >= props.data.timeOut) {
-        alert("YOUR TIME IS UP!!");
-        navigate("/");
-      }
-    }
+  useEffect(() => {
+    const getMovie = async () => {
+      const resp = await apiCalls("get", `movies/${params.id}`);
 
-    const resp = await apiCalls("get", `movies/${params.id}`);
+      setSubs(resp[0]);
+      setMovie({
+        id: resp[1]._id,
+        name: resp[1].Name,
+        genres: resp[1].Genres,
+        image: resp[1].Image,
+        date: resp[1].Premiered,
+      });
+    };
 
-    setSubs(resp[0]);
-    setMovie({
-      id: resp[1]._id,
-      name: resp[1].Name,
-      genres: resp[1].Genres,
-      image: resp[1].Image,
-      date: resp[1].Premiered,
-    });
+    sessionCheck(props.data);
+    getMovie();
   }, []);
 
   const edit = async () => {
@@ -65,15 +62,11 @@ export default function Movie(props) {
         <br />
 
         {props.data.perm.includes("Update Movies") ? (
-          <Link to={"/main/movies/editMovie/" + movie.id}>
-            <input type="button" value="Edit" />
-          </Link>
+          <Button link={`/main/movies/editMovie/${movie.id}`} text="Edit" />
         ) : null}
 
         {props.data.perm.includes("Delete Movies") ? (
-          <Link to="/main/movies">
-            <input onClick={edit} type="button" value="Delete" />
-          </Link>
+          <Button link="/main/movies" text="Delete" onClick={edit} />
         ) : null}
         <br />
         <br />

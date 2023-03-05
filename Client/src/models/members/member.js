@@ -1,11 +1,12 @@
 import Button from "../other/main";
-import { apiCalls } from "../other/apiCalls";
+import { apiCalls, useSessionCheck } from "../other/functions";
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 
 export default function Member(props) {
   const params = useParams();
   const navigate = useNavigate();
+  const { sessionCheck } = useSessionCheck();
   const [subMovies, setSubs] = useState([]);
   const [movies, setMovies] = useState([]);
   const [list, setList] = useState([]);
@@ -18,13 +19,6 @@ export default function Member(props) {
   });
 
   useEffect(() => {
-    if (props.data.name != "admin") {
-      if (Date.now() - props.data.time >= props.data.timeOut) {
-        alert("YOUR TIME IS UP!!");
-        navigate("/");
-      }
-    }
-
     const getSubs = async () => {
       const resp = await apiCalls("get", `subscriptions/${params.id}`);
 
@@ -39,6 +33,7 @@ export default function Member(props) {
       });
     };
 
+    sessionCheck(props.data);
     getSubs();
   }, []);
 
@@ -135,11 +130,9 @@ export default function Member(props) {
               })}
             </ul>
 
-            <input
-              type="button"
-              value="Subscribe to a new movie"
-              onClick={() => showOrHide(member.id)}
-            />
+            <button onClick={() => showOrHide(member.id)}>
+              Subscribe to a new movie
+            </button>
 
             <div id={member.id} style={{ visibility: "hidden" }}>
               <br />
@@ -167,7 +160,7 @@ export default function Member(props) {
               />
               <br />
               <br />
-              <input onClick={send} type="button" value="Subscribe" />
+              <button onClick={send}>Subscribe</button>
             </div>
           </big>
         </div>

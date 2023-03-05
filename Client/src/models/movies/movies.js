@@ -1,11 +1,11 @@
-import { apiCalls } from "../other/apiCalls";
+import { apiCalls, useSessionCheck } from "../other/functions";
 import { useEffect, useState } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import Comp from "./comp1";
+import { Button } from "../other/main";
 
 export default function Movies(props) {
-  const navigate = useNavigate();
-
+  const { sessionCheck } = useSessionCheck();
   const [movies, setMovies] = useState([]);
   const [members, setMembers] = useState([]);
   const [subs, setSubs] = useState([]);
@@ -13,22 +13,19 @@ export default function Movies(props) {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    if (props.data.name != "admin") {
-      if (Date.now() - props.data.time >= props.data.timeOut) {
-        alert("YOUR TIME IS UP!!");
-        navigate("/");
-      }
-    }
-  }, []);
-
-  useEffect(async () => {
-    if (search == "") {
+    const getData = async () => {
       const resp = await apiCalls("get", "");
       setMovies(resp[0]);
       setMembers(resp[1]);
       setSubs(resp[2]);
+    };
+
+    sessionCheck(props.data);
+
+    if (search == "") {
+      getData();
     }
-  }, [movies || members || subs]);
+  }, []); //movies || members || subs
 
   const edit = async (obj) => {
     await apiCalls("delete", `deleteMovie/${obj}`);
@@ -54,21 +51,16 @@ export default function Movies(props) {
 
       {props.data.perm.includes("Create Movies") ? (
         <div style={{ textAlign: "center" }}>
-          <Link to="">
-            <input
-              type="button"
-              value="All Movies"
-              onClick={() => setAdd(false)}
-            />
-          </Link>
+          <Button link="" text="All Movies" onClick={() => setAdd(false)} />
           &nbsp;
-          <Link to="addMovie">
-            <input
-              type="button"
-              value="Add Movie"
-              onClick={() => (setAdd(true), setSearch(""))}
-            />
-          </Link>
+          <Button
+            link="addMovie"
+            text="Add Movie"
+            onClick={() => {
+              setAdd(true);
+              setSearch("");
+            }}
+          />
           <br />
           <br />
         </div>
@@ -84,12 +76,9 @@ export default function Movies(props) {
             type="text"
             onChange={(e) => setSearch(e.target.value)}
           />
-          <input
-            type="button"
-            value="Find"
-            onClick={find}
-            style={{ fontSize: "14px", height: "22px" }}
-          />
+          <button style={{ fontSize: "14px", height: "22px" }} onClick={find}>
+            Find
+          </button>
           <br />
           <br />
         </div>
@@ -127,19 +116,15 @@ export default function Movies(props) {
                   <br />
 
                   {props.data.perm.includes("Update Movies") ? (
-                    <Link to={"editMovie/" + item._id}>
-                      <input type="button" value="Edit" />
-                    </Link>
+                    <Button link={`editMovie/${item._id}`} text="Edit" />
                   ) : null}
 
                   {props.data.perm.includes("Delete Movies") ? (
-                    <Link to="">
-                      <input
-                        onClick={() => edit(item._id)}
-                        type="button"
-                        value="Delete"
-                      />
-                    </Link>
+                    <Button
+                      link=""
+                      text="Delete"
+                      onClick={() => edit(item._id)}
+                    />
                   ) : null}
                   <br />
                   <br />

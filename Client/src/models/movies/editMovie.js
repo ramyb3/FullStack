@@ -1,10 +1,11 @@
-import { apiCalls } from "../other/apiCalls";
+import { apiCalls, useSessionCheck } from "../other/functions";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function EditMovie(props) {
   const navigate = useNavigate();
-
+  const { sessionCheck } = useSessionCheck();
+  const params = useParams();
   const [movie, setMovie] = useState({
     genres: [],
     name: "",
@@ -13,26 +14,21 @@ export default function EditMovie(props) {
     date: "",
   });
 
-  const params = useParams();
+  useEffect(() => {
+    const getMovie = async () => {
+      const resp = await apiCalls("get", `editMovie/${params.id}`);
 
-  useEffect(async () => {
-    if (props.data.name != "admin") {
-      if (Date.now() - props.data.time >= props.data.timeOut) {
-        // check if time over
-        alert("YOUR TIME IS UP!!");
-        navigate("/");
-      }
-    }
+      setMovie({
+        genres: resp[0].Genres,
+        name: resp[0].Name,
+        id: resp[0]._id,
+        image: resp[0].Image,
+        date: resp[1],
+      });
+    };
 
-    const resp = await apiCalls("get", `editMovie/${params.id}`);
-
-    setMovie({
-      genres: resp[0].Genres,
-      name: resp[0].Name,
-      id: resp[0]._id,
-      image: resp[0].Image,
-      date: resp[1],
-    });
+    sessionCheck(props.data);
+    getMovie();
   }, []);
 
   const send = async (x) => {
@@ -40,10 +36,12 @@ export default function EditMovie(props) {
       if (movie.name != "" && movie.genres.length != 0 && movie.date != "") {
         await apiCalls("post", "updateMovie", movie);
         navigate("/main/movies");
-      } else alert("YOU MUST FILL ALL THE FORM!!");
+      } else {
+        alert("YOU MUST FILL ALL THE FORM!!");
+      }
+    } else {
+      navigate("/main/movies");
     }
-
-    if (x == 2) navigate("/main/movies");
   };
 
   const check = (e) => {
@@ -269,8 +267,8 @@ export default function EditMovie(props) {
         />
         <br />
         <br />
-        <input type="button" value="Update" onClick={() => send(1)} />
-        <input type="button" value="Cancel" onClick={() => send(2)} />
+        <button onClick={() => send(1)}>Update</button>
+        <button onClick={() => send(2)}>Cancel</button>
         <br />
         <br />
       </div>

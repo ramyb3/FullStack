@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
-export default function Comp(props) {
+export default function NewSubscription(props) {
   const [list, setList] = useState([]);
 
   useEffect(() => {
-    setList(props.movies);
-
     const arr = [];
     const sub = props.subs.find((data) => data.MemberId == props.data._id);
+
+    setList(props.movies);
 
     if (sub) {
       for (let i = 0; i < sub.Movies.length; i++) {
@@ -19,7 +19,7 @@ export default function Comp(props) {
   }, [props]);
 
   return (
-    <select onChange={(e) => props.callback(e)}>
+    <select onChange={(e) => props.setNewSub(e)}>
       <option value="">--Select Movie--</option>
 
       {list.map((data, index) => {

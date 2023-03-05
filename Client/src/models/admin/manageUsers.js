@@ -1,5 +1,5 @@
 import { Button } from "../other/main";
-import { apiCalls } from "../other/apiCalls";
+import { apiCalls } from "../other/functions";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
@@ -14,9 +14,9 @@ export default function Users() {
     };
 
     getUsers();
-  }, [users]);
+  }, []);
 
-  const edit = async (user) => {
+  const deleteUser = async (user) => {
     await apiCalls("delete", `deleteUser/${user}`);
   };
 
@@ -64,7 +64,7 @@ export default function Users() {
                       <Button
                         link=""
                         text="Delete"
-                        onClick={() => edit(item.id)}
+                        onClick={() => deleteUser(item.id)}
                       />
                     </div>
                   ) : null}

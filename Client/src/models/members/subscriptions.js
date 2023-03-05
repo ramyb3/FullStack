@@ -1,221 +1,182 @@
+import Subscriptions from "./subscriptions-comp";
+import NewSubscription from "./new-subscription";
+import { Button } from "../other/main";
 import { useEffect, useState } from "react";
-import { apiCalls } from "../other/apiCalls";
-import { Link, Outlet, useNavigate } from "react-router-dom";
-import Comp1 from "./comp2";
-import Comp2 from "./comp3";
+import { apiCalls, useSessionCheck } from "../other/functions";
+import { Link, Outlet } from "react-router-dom";
 
 export default function Subs(props) {
-  const navigate = useNavigate();
-
+  const { sessionCheck } = useSessionCheck();
   const [movies, setMovies] = useState([]);
   const [members, setMembers] = useState([]);
   const [subs, setSubs] = useState([]);
   const [add, setAdd] = useState(false);
-  const [sub, setNew] = useState({ id: 0, movie: "", date: "" });
+  const [newSub, setNewSub] = useState({ id: 0, movie: "", date: "" });
 
   useEffect(() => {
-    if (props.data.name != "admin") {
-      if (Date.now() - props.data.time >= props.data.timeOut) {
-        // check if time over
-        alert("YOUR TIME IS UP!!");
-        navigate("/");
-      }
-    }
-  }, []);
+    const getData = async () => {
+      const resp = await apiCalls("get", "");
+      setMovies(resp[0]);
+      setMembers(resp[1]);
+      setSubs(resp[2]);
+    };
 
-  useEffect(async () => {
-    const resp = await apiCalls("get", "");
-    setMovies(resp[0]);
-    setMembers(resp[1]);
-    setSubs(resp[2]);
-  }, [movies || members || subs]);
+    sessionCheck(props.data);
+    getData();
+  }, []); //movies, members, subs
 
-  const edit = async (obj) => {
+  const deleteMember = async (obj) => {
     await apiCalls("delete", `deleteMember/${obj}`);
   };
 
   const showORhide = (obj) => {
-    let check = false;
-
-    if (document.getElementById(obj).style.visibility == "hidden") {
-      document.getElementById(obj).style.visibility = "visible";
-
-      check = true;
-    }
-
-    if (
-      document.getElementById(obj).style.visibility == "visible" &&
-      check == false
-    )
-      document.getElementById(obj).style.visibility = "hidden";
+    document.getElementById(obj).style.visibility =
+      document.getElementById(obj).style.visibility == "hidden"
+        ? "visible"
+        : "hidden";
   };
 
   const send = async () => {
-    if (sub.movie != "" && sub.date != "") {
-      await apiCalls("post", "addSubs", sub);
+    if (newSub.movie != "" && newSub.date != "") {
+      await apiCalls("post", "addSubs", newSub);
     } else {
       alert("YOU MUST FILL ALL THE FORM!!");
     }
   };
 
   return (
-    <div>
-      <h2 style={{ textAlign: "center" }}>Subscriptions Page</h2>
+    <>
+      <div className="flex">
+        <h2>Subscriptions Page</h2>
 
-      {props.data.perm.includes("Create Subscriptions") ? (
-        <div style={{ textAlign: "center" }}>
-          <Link to="">
-            <input
-              type="button"
-              value="All Members"
-              onClick={() => setAdd(false)}
-            />
-          </Link>
-          &nbsp;
-          <Link to="addMember">
-            <input
-              type="button"
-              value="Add Member"
+        {props.data.perm.includes("Create Subscriptions") ? (
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Button link="" onClick={() => setAdd(false)} text="All Members" />
+            <Button
+              link="addMember"
               onClick={() => setAdd(true)}
+              text="Add Member"
             />
-          </Link>
-          <br />
-          <br />
-        </div>
-      ) : null}
+          </div>
+        ) : null}
+      </div>
 
       <Outlet />
 
-      {add == false
+      {!add
         ? members.map((item, index) => {
             return (
               <div key={index}>
-                <div className="box1" style={{ width: "27em" }}>
-                  <h2> {item.Name} </h2>
+                <div
+                  className="box1 flex"
+                  style={{ width: "27em", marginBottom: "10px" }}
+                >
+                  <h2>{item.Name}</h2>
 
-                  <big>
-                    Email: {item.Email}
-                    <br />
-                    City: {item.City}
-                    <br />
-                    <br />
-                  </big>
+                  <span style={{ fontSize: "20px" }}>Email: {item.Email}</span>
+                  <span style={{ fontSize: "20px" }}>City: {item.City}</span>
 
-                  {props.data.perm.includes("Update Subscriptions") ? (
-                    <Link to={"editMember/" + item._id}>
-                      <input type="button" value="Edit" />
-                    </Link>
-                  ) : null}
-
-                  {props.data.perm.includes("Delete Subscriptions") ? (
-                    <Link to="">
-                      <input
-                        onClick={() => edit(item._id)}
-                        type="button"
-                        value="Delete"
+                  <div
+                    style={{ display: "flex", gap: "10px", padding: "15px" }}
+                  >
+                    {props.data.perm.includes("Update Subscriptions") ? (
+                      <Button link={`editMember/${item._id}`} text="Edit" />
+                    ) : null}
+                    {props.data.perm.includes("Delete Subscriptions") ? (
+                      <Button
+                        link=""
+                        onClick={() => deleteMember(item._id)}
+                        text="Delete"
                       />
-                    </Link>
-                  ) : null}
-                  <br />
-                  <br />
+                    ) : null}
+                  </div>
 
                   {props.data.perm.includes("View Movies") ? (
-                    <div className="box2" style={{ width: "26em" }}>
-                      <big>
-                        <b>
-                          <Comp1 data={item} subs={subs} />
-                        </b>
-                        <br />
+                    <div className="box2" style={{ width: "21em" }}>
+                      <Subscriptions data={item} subs={subs} />
 
-                        {subs.map((i) => {
-                          return (
-                            <ul>
-                              {i.MemberId == item._id ? (
-                                <div>
-                                  {i.Movies.map((j) => {
-                                    return (
-                                      <li>
-                                        {movies.map((k) => {
-                                          return (
-                                            <div>
-                                              {j.MovieId == k._id ? (
-                                                <div>
-                                                  <Link
-                                                    to={
-                                                      "/main/movies/" +
-                                                      j.MovieId
-                                                    }
-                                                  >
-                                                    {k.Name}
-                                                  </Link>
-                                                  &nbsp;,&nbsp;
-                                                  {j.Date.slice(8, 10)}/
-                                                  {j.Date.slice(5, 7)}/
-                                                  {j.Date.slice(0, 4)}
-                                                </div>
-                                              ) : null}
-                                            </div>
-                                          );
-                                        })}
-                                      </li>
-                                    );
-                                  })}{" "}
-                                </div>
-                              ) : null}
-                            </ul>
-                          );
-                        })}
+                      {subs.map((i, index1) => {
+                        return (
+                          <ul key={index1}>
+                            {i.MemberId == item._id ? (
+                              <div>
+                                {i.Movies.map((j, index2) => {
+                                  return (
+                                    <li key={index2}>
+                                      {movies.map((k, index3) => {
+                                        return j.MovieId == k._id ? (
+                                          <div
+                                            key={index3}
+                                            style={{
+                                              display: "flex",
+                                              justifyContent: "space-between",
+                                              marginLeft: "-30px",
+                                              paddingRight: "5px",
+                                            }}
+                                          >
+                                            <Link
+                                              to={`/main/movies/${j.MovieId}`}
+                                            >
+                                              {k.Name}
+                                            </Link>
+                                            <span>
+                                              {j.Date.slice(8, 10)}/
+                                              {j.Date.slice(5, 7)}/
+                                              {j.Date.slice(0, 4)}
+                                            </span>
+                                          </div>
+                                        ) : null;
+                                      })}
+                                    </li>
+                                  );
+                                })}
+                              </div>
+                            ) : null}
+                          </ul>
+                        );
+                      })}
 
-                        <input
-                          type="button"
-                          value="Subscribe to a new movie"
-                          onClick={() => showORhide(item._id)}
+                      <button onClick={() => showORhide(item._id)}>
+                        Subscribe to a new movie
+                      </button>
+
+                      <div
+                        id={item._id}
+                        className="flex"
+                        style={{
+                          visibility: "hidden",
+                          gap: "10px",
+                          paddingTop: "10px",
+                        }}
+                      >
+                        <b>Add a new movie:</b>
+                        <NewSubscription
+                          setNewSub={(data) =>
+                            setNewSub({ ...newSub, movie: data })
+                          }
+                          data={item}
+                          movies={movies}
+                          subs={subs}
                         />
-
-                        <div id={item._id} style={{ visibility: "hidden" }}>
-                          <br />
-
-                          <b> Add a new movie: </b>
-                          <br />
-                          <br />
-
-                          <Comp2
-                            callback={(data) => setNew({ ...sub, movie: data })}
-                            data={item}
-                            movies={movies}
-                            subs={subs}
-                          />
-                          <br />
-
-                          <input
-                            type="date"
-                            onChange={(e) =>
-                              setNew({
-                                ...sub,
-                                id: item._id,
-                                date: e.target.value,
-                              })
-                            }
-                          />
-                          <br />
-                          <br />
-                          <Link to="">
-                            <input
-                              onClick={send}
-                              type="button"
-                              value="Subscribe"
-                            />
-                          </Link>
-                        </div>
-                      </big>
+                        <input
+                          type="date"
+                          onChange={(e) =>
+                            setNewSub({
+                              ...newSub,
+                              id: item._id,
+                              date: e.target.value,
+                            })
+                          }
+                        />
+                        <Button link="" onClick={send} text="Subscribe" />
+                      </div>
                     </div>
                   ) : null}
                 </div>
-                <br />
               </div>
             );
           })
         : null}
-    </div>
+    </>
   );
 }

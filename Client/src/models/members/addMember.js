@@ -1,18 +1,14 @@
-import { apiCalls } from "../other/apiCalls";
-import { useNavigate } from "react-router-dom";
+import { apiCalls, useSessionCheck } from "../other/functions";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function AddMember(props) {
   const navigate = useNavigate();
+  const { sessionCheck } = useSessionCheck();
   const [member, setMember] = useState({ name: "", city: "", email: "" });
 
   useEffect(() => {
-    if (props.data.name != "admin") {
-      if (Date.now() - props.data.time >= props.data.timeOut) {
-        alert("YOUR TIME IS UP!!");
-        navigate("/");
-      }
-    }
+    sessionCheck(props.data);
   }, []);
 
   const send = async (method) => {

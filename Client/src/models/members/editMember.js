@@ -1,9 +1,10 @@
-import { apiCalls } from "../other/apiCalls";
+import { apiCalls, useSessionCheck } from "../other/functions";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function EditMember(props) {
   const navigate = useNavigate();
+  const { sessionCheck } = useSessionCheck();
   const params = useParams();
   const [member, setMember] = useState({
     name: "",
@@ -13,13 +14,6 @@ export default function EditMember(props) {
   });
 
   useEffect(() => {
-    if (props.data.name != "admin") {
-      if (Date.now() - props.data.time >= props.data.timeOut) {
-        alert("YOUR TIME IS UP!!");
-        navigate("/");
-      }
-    }
-
     const getMember = async () => {
       const resp = await apiCalls("get", `editMember/${params.id}`);
 
@@ -31,6 +25,7 @@ export default function EditMember(props) {
       });
     };
 
+    sessionCheck(props.data);
     getMember();
   }, []);
 

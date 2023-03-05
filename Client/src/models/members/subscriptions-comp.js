@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function Comp(props) {
+export default function Subscriptions(props) {
   const [check, setCheck] = useState(false);
 
   useEffect(() => {
@@ -12,7 +12,11 @@ export default function Comp(props) {
     }
   }, [props]);
 
-  return check
-    ? "The Movies This Member Watched:"
-    : "This Member Didn't Watched Any Movie!!";
+  return (
+    <b>
+      {check
+        ? "The Movies This Member Watched:"
+        : "This Member Didn't Watched Any Movie!!"}
+    </b>
+  );
 }

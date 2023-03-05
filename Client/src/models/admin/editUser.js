@@ -1,4 +1,4 @@
-import { apiCalls } from "../other/apiCalls";
+import { apiCalls } from "../other/functions";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 

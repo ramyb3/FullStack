@@ -1,10 +1,10 @@
-import { apiCalls } from "../other/apiCalls";
+import { apiCalls, useSessionCheck } from "../other/functions";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 export default function AddMovie(props) {
   const navigate = useNavigate();
-
+  const { sessionCheck } = useSessionCheck();
   const [movie, setMovie] = useState({
     name: "",
     genres: [],
@@ -13,13 +13,7 @@ export default function AddMovie(props) {
   });
 
   useEffect(() => {
-    if (props.data.name != "admin") {
-      if (Date.now() - props.data.time >= props.data.timeOut) {
-        // check if time over
-        alert("YOUR TIME IS UP!!");
-        navigate("/");
-      }
-    }
+    sessionCheck(props.data);
   }, []);
 
   const send = async (x) => {
@@ -27,10 +21,14 @@ export default function AddMovie(props) {
       if (movie.name != "" && movie.genres.length != 0 && movie.date != "") {
         await apiCalls("post", "addMovie", movie);
         navigate("/main/movies");
-      } else alert("YOU MUST FILL ALL THE FORM!!");
+      } else {
+        alert("YOU MUST FILL ALL THE FORM!!");
+      }
     }
 
-    if (x == 2) navigate("/main/movies");
+    if (x == 2) {
+      navigate("/main/movies");
+    }
   };
 
   const check = (e) => {
@@ -97,8 +95,8 @@ export default function AddMovie(props) {
         />
         <br />
         <br />
-        <input type="button" value="Save" onClick={() => send(1)} />
-        <input type="button" value="Cancel" onClick={() => send(2)} />
+        <button onClick={() => send(1)}>Save</button>
+        <button onClick={() => send(2)}>Cancel</button>
         <br />
         <br />
       </div>

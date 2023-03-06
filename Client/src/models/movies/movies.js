@@ -1,6 +1,6 @@
 import { apiCalls, useSessionCheck } from "../other/functions";
 import { Button } from "../other/main";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
 export default function Movies(props) {
@@ -12,6 +12,7 @@ export default function Movies(props) {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
+const serachRef= useRef(null)
 
   const getAllData = async () => {
     const resp = await apiCalls("get", "");
@@ -29,10 +30,11 @@ export default function Movies(props) {
   }, []);
 
   useEffect(() => {
-    if (refresh || !add) {
+    if (refresh) {
+      serachRef.current.value="";
       getAllData();
     }
-  }, [refresh, add]);
+  }, [refresh]);
 
   const find = async () => {
     if (search !== "") {
@@ -61,6 +63,7 @@ export default function Movies(props) {
               text="All Movies"
               onClick={() => {
                 setLoading(true);
+                setRefresh(true);
                 setAdd(false);
               }}
             />
@@ -84,6 +87,7 @@ export default function Movies(props) {
           }}
         >
           <input
+            ref={serachRef}
             placeholder="Find Movie"
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -131,77 +135,84 @@ function Movie(props) {
   return (
     <div className="box1 flex-column">
       <h2>{`${props.data.Name}, ${props.data.Premiered.slice(0, 4)}`}</h2>
-      <big style={{ paddingBottom: "10px" }}>
-        <b>Genres: </b>
-        {props.data.Genres.map((genre, index) => {
-          return `${genre}${
-            index !== props.data.Genres.length - 1 ? ", " : ""
-          }`;
-        })}
-      </big>
-      <img src={props.data.Image} width="250px" height="300px" />
-      <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
-        {props.perm.includes("Update Movies") ? (
-          <Button link={`editMovie/${props.data._id}`} text="Edit" />
-        ) : null}
-        {props.perm.includes("Delete Movies") ? (
-          <Button
-            link=""
-            text="Delete"
-            onClick={() => deleteMovie(props.data._id)}
-          />
-        ) : null}
-      </div>
 
-      {loading ? <h3>Loading...</h3> : null}
-
-      {props.perm.includes("View Subscriptions") ? (
-        <div className="box2" style={{ height: "10em" }}>
-          <b>
-            {props.subs.find((sub) =>
-              sub.Movies.find((movie) => movie.MovieId === props.data._id)
-            )
-              ? "The Members Who Watched This Movie:"
-              : "No One Watched This Movie!!"}
-          </b>
-
-          <div className="overflow">
-            {props.subs.map((i) => {
-              return i.Movies.map((j, index1) => {
-                return (
-                  <ul key={index1}>
-                    {j.MovieId === props.data._id ? (
-                      <li>
-                        {props.members.map((k, index2) => {
-                          return k._id === i.MemberId ? (
-                            <div
-                              key={index2}
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                marginLeft: "-30px",
-                                paddingRight: "5px",
-                              }}
-                            >
-                              <Link to={`/main/subscriptions/${i.MemberId}`}>
-                                {k.Name}
-                              </Link>
-                              <span>
-                                {j.Date.slice(8, 10)}/{j.Date.slice(5, 7)}/
-                                {j.Date.slice(0, 4)}
-                              </span>
-                            </div>
-                          ) : null;
-                        })}
-                      </li>
-                    ) : null}
-                  </ul>
-                );
-              });
+      {loading ? (
+        <h3>Loading...</h3>
+      ) : (
+        <>
+          <big style={{ paddingBottom: "10px" }}>
+            <b>Genres: </b>
+            {props.data.Genres.map((genre, index) => {
+              return `${genre}${
+                index !== props.data.Genres.length - 1 ? ", " : ""
+              }`;
             })}
+          </big>
+          <img src={props.data.Image} width="250px" height="300px" />
+          <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
+            {props.perm.includes("Update Movies") ? (
+              <Button link={`editMovie/${props.data._id}`} text="Edit" />
+            ) : null}
+            {props.perm.includes("Delete Movies") ? (
+              <Button
+                link=""
+                text="Delete"
+                onClick={() => deleteMovie(props.data._id)}
+              />
+            ) : null}
           </div>
-        </div>
-      ) : null}
+
+          {props.perm.includes("View Subscriptions") ? (
+            <div className="box2" style={{ height: "10em" }}>
+              <b>
+                {props.subs.find((sub) =>
+                  sub.Movies.find((movie) => movie.MovieId === props.data._id)
+                )
+                  ? "The Members Who Watched This Movie:"
+                  : "No One Watched This Movie!!"}
+              </b>
+
+              <div className="overflow">
+                {props.subs.map((i) => {
+                  return i.Movies.map((j, index1) => {
+                    return (
+                      <ul key={index1}>
+                        {j.MovieId === props.data._id ? (
+                          <li>
+                            {props.members.map((k, index2) => {
+                              return k._id === i.MemberId ? (
+                                <div
+                                  key={index2}
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    marginLeft: "-30px",
+                                    paddingRight: "5px",
+                                  }}
+                                >
+                                  <Link
+                                    to={`/main/subscriptions/${i.MemberId}`}
+                                  >
+                                    {k.Name}
+                                  </Link>
+                                  <span>
+                                    {j.Date.slice(8, 10)}/{j.Date.slice(5, 7)}/
+                                    {j.Date.slice(0, 4)}
+                                  </span>
+                                </div>
+                              ) : null;
+                            })}
+                          </li>
+                        ) : null}
+                      </ul>
+                    );
+                  });
+                })}
+              </div>
+            </div>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }

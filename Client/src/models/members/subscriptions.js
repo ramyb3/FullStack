@@ -91,78 +91,83 @@ function Member(props) {
     <div className="box1 flex-column">
       <h2>{props.data.Name}</h2>
 
-      <span style={{ fontSize: "20px" }}>Email: {props.data.Email}</span>
-      <span style={{ fontSize: "20px" }}>City: {props.data.City}</span>
+      {loading ? (
+        <h3>Loading...</h3>
+      ) : (
+        <>
+          <span style={{ fontSize: "20px" }}>Email: {props.data.Email}</span>
+          <span style={{ fontSize: "20px" }}>City: {props.data.City}</span>
 
-      <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
-        {props.perm.includes("Update Subscriptions") ? (
-          <Button link={`editMember/${props.data._id}`} text="Edit" />
-        ) : null}
-        {props.perm.includes("Delete Subscriptions") ? (
-          <Button
-            link=""
-            onClick={() => deleteMember(props.data._id)}
-            text="Delete"
-          />
-        ) : null}
-      </div>
-
-      {loading ? <h3>Loading...</h3> : null}
-
-      {props.perm.includes("View Movies") ? (
-        <div className="box2" style={{ height: "18em" }}>
-          <b>
-            {props.subs.find((sub) => sub.MemberId === props.data._id)
-              ? "The Movies This Member Watched:"
-              : "This Member Didn't Watched Any Movie!!"}
-          </b>
-
-          <div className="overflow">
-            {props.subs.map((i, index1) => {
-              return (
-                <ul key={index1}>
-                  {i.MemberId === props.data._id
-                    ? i.Movies.map((j, index2) => {
-                        return (
-                          <li key={index2}>
-                            {props.movies.map((k, index3) => {
-                              return j.MovieId === k._id ? (
-                                <div
-                                  key={index3}
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    marginLeft: "-30px",
-                                    paddingRight: "5px",
-                                  }}
-                                >
-                                  <Link to={`/main/movies/${j.MovieId}`}>
-                                    {k.Name.slice(0, 25)}
-                                  </Link>
-                                  <span>
-                                    {j.Date.slice(8, 10)}/{j.Date.slice(5, 7)}/
-                                    {j.Date.slice(0, 4)}
-                                  </span>
-                                </div>
-                              ) : null;
-                            })}
-                          </li>
-                        );
-                      })
-                    : null}
-                </ul>
-              );
-            })}
+          <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
+            {props.perm.includes("Update Subscriptions") ? (
+              <Button link={`editMember/${props.data._id}`} text="Edit" />
+            ) : null}
+            {props.perm.includes("Delete Subscriptions") ? (
+              <Button
+                link=""
+                onClick={() => deleteMember(props.data._id)}
+                text="Delete"
+              />
+            ) : null}
           </div>
 
-          <NewSubscription
-            id={props.data._id}
-            movies={props.movies}
-            subs={props.subs}
-            refresh={props.refresh}
-          />
-        </div>
-      ) : null}
+          {props.perm.includes("View Movies") ? (
+            <div className="box2" style={{ height: "18em" }}>
+              <b>
+                {props.subs.find((sub) => sub.MemberId === props.data._id)
+                  ? "The Movies This Member Watched:"
+                  : "This Member Didn't Watched Any Movie!!"}
+              </b>
+
+              <div className="overflow">
+                {props.subs.map((i, index1) => {
+                  return (
+                    <ul key={index1}>
+                      {i.MemberId === props.data._id
+                        ? i.Movies.map((j, index2) => {
+                            return (
+                              <li key={index2}>
+                                {props.movies.map((k, index3) => {
+                                  return j.MovieId === k._id ? (
+                                    <div
+                                      key={index3}
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        marginLeft: "-30px",
+                                        paddingRight: "5px",
+                                      }}
+                                    >
+                                      <Link to={`/main/movies/${j.MovieId}`}>
+                                        {k.Name.slice(0, 25)}
+                                      </Link>
+                                      <span>
+                                        {j.Date.slice(8, 10)}/
+                                        {j.Date.slice(5, 7)}/
+                                        {j.Date.slice(0, 4)}
+                                      </span>
+                                    </div>
+                                  ) : null;
+                                })}
+                              </li>
+                            );
+                          })
+                        : null}
+                    </ul>
+                  );
+                })}
+              </div>
+
+              <NewSubscription
+                id={props.data._id}
+                movies={props.movies}
+                subs={props.subs}
+                refresh={props.refresh}
+              />
+            </div>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
@@ -221,39 +226,42 @@ function NewSubscription(props) {
       <button onClick={() => showOrHide(props.id)}>
         Subscribe to a new movie
       </button>
-      <div
-        ref={buttonRef}
-        className="flex-column"
-        style={{
-          visibility: "hidden",
-          gap: "10px",
-          paddingTop: "10px",
-        }}
-      >
-        <b>Add new movie:</b>
-        <select
-          style={{ textAlign: "center" }}
-          ref={selectRef}
-          onChange={(e) => setNewSub({ ...newSub, movie: e.target.value })}
+      {loading ? (
+        <h3>Loading...</h3>
+      ) : (
+        <div
+          ref={buttonRef}
+          className="flex-column"
+          style={{
+            visibility: "hidden",
+            gap: "10px",
+            paddingTop: "10px",
+          }}
         >
-          <option value="">--Select Movie--</option>
+          <b>Add new movie:</b>
+          <select
+            style={{ textAlign: "center" }}
+            ref={selectRef}
+            onChange={(e) => setNewSub({ ...newSub, movie: e.target.value })}
+          >
+            <option value="">--Select Movie--</option>
 
-          {list.map((data, index) => {
-            return (
-              <option key={index} value={data.Name}>
-                {data.Name}
-              </option>
-            );
-          })}
-        </select>
-        <input
-          ref={dateRef}
-          type="date"
-          onChange={(e) => setNewSub({ ...newSub, date: e.target.value })}
-        />
-        <Button link="" onClick={addSub} text="Subscribe" />
-      </div>
-      {loading ? <h3>Loading...</h3> : null}
+            {list.map((data, index) => {
+              return (
+                <option key={index} value={data.Name}>
+                  {data.Name}
+                </option>
+              );
+            })}
+          </select>
+          <input
+            ref={dateRef}
+            type="date"
+            onChange={(e) => setNewSub({ ...newSub, date: e.target.value })}
+          />
+          <Button link="" onClick={addSub} text="Subscribe" />
+        </div>
+      )}
     </>
   );
 }

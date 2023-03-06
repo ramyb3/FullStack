@@ -12,7 +12,7 @@ export default function Movies(props) {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
-const serachRef= useRef(null)
+  const serachRef = useRef(null);
 
   const getAllData = async () => {
     const resp = await apiCalls("get", "");
@@ -31,7 +31,7 @@ const serachRef= useRef(null)
 
   useEffect(() => {
     if (refresh) {
-      serachRef.current.value="";
+      serachRef.current.value = "";
       getAllData();
     }
   }, [refresh]);

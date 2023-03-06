@@ -1,3 +1,4 @@
+import { Button } from "../other/main";
 import { apiCalls, useSessionCheck } from "../other/functions";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -6,6 +7,7 @@ export default function EditMovie(props) {
   const navigate = useNavigate();
   const { sessionCheck } = useSessionCheck();
   const params = useParams();
+  const [loading, setLoading] = useState(false);
   const [movie, setMovie] = useState({
     genres: [],
     name: "",
@@ -25,254 +27,116 @@ export default function EditMovie(props) {
         image: resp[0].Image,
         date: resp[1],
       });
+
+      setLoading(false);
     };
 
     sessionCheck(props.data);
+    setLoading(true);
     getMovie();
   }, []);
 
-  const send = async (x) => {
-    if (x == 1) {
-      if (movie.name != "" && movie.genres.length != 0 && movie.date != "") {
-        await apiCalls("post", "updateMovie", movie);
-        navigate("/main/movies");
-      } else {
-        alert("YOU MUST FILL ALL THE FORM!!");
-      }
-    } else {
+  const updateMovie = async () => {
+    if (movie.name !== "" && movie.genres.length > 0 && movie.date !== "") {
+      setLoading(true);
+      await apiCalls("post", "updateMovie", movie);
       navigate("/main/movies");
+    } else {
+      alert("YOU MUST FILL ALL THE FORM!!");
     }
   };
 
-  const check = (e) => {
-    let value = Array.from(e.target.selectedOptions, (option) => option.value);
-
-    setMovie({ ...movie, genres: value });
+  const checkGenres = (e) => {
+    const genres = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
+    setMovie({ ...movie, genres });
   };
+
+  const genres = [
+    "Action",
+    "Adventure",
+    "Anime",
+    "Comedy",
+    "Crime",
+    "Drama",
+    "Espionage",
+    "Family",
+    "Fantasy",
+    "History",
+    "Horror",
+    "Legal",
+    "Medical",
+    "Music",
+    "Mystery",
+    "Romance",
+    "Science-Fiction",
+    "Sports",
+    "Supernatural",
+    "Thriller",
+    "War",
+    "Western",
+  ];
 
   return (
     <div style={{ textAlign: "center" }}>
       <h2>Edit Movie Page</h2>
 
-      <div className="box">
-        <br />
-        Enter the name of the movie:
-        <br />{" "}
-        <input
+      <div className="box flex" style={{ gap: "10px", paddingTop: "10px" }}>
+        <Input
+          text="name of the movie"
           type="text"
           value={movie.name}
           onChange={(e) => setMovie({ ...movie, name: e.target.value })}
         />
-        <br />
-        <br />
-        Select the genres of the movie: <br />
+        Select the genres of the movie:
         <select
-          style={{ width: "200px", textAlign: "center" }}
+          style={{ width: "200px", textAlign: "center", marginTop: "-8px" }}
           multiple="multiple"
-          onChange={(e) => check(e)}
+          onChange={(e) => checkGenres(e)}
         >
-          {movie.genres.includes("Action") ? (
-            <option value="Action" selected>
-              Action
-            </option>
-          ) : (
-            <option value="Action">Action</option>
-          )}
-
-          {movie.genres.includes("Adventure") ? (
-            <option value="Adventure" selected>
-              Adventure
-            </option>
-          ) : (
-            <option value="Adventure">Adventure</option>
-          )}
-
-          {movie.genres.includes("Anime") ? (
-            <option value="Anime" selected>
-              Anime
-            </option>
-          ) : (
-            <option value="Anime">Anime</option>
-          )}
-
-          {movie.genres.includes("Comedy") ? (
-            <option value="Comedy" selected>
-              Comedy
-            </option>
-          ) : (
-            <option value="Comedy">Comedy</option>
-          )}
-
-          {movie.genres.includes("Crime") ? (
-            <option value="Crime" selected>
-              Crime
-            </option>
-          ) : (
-            <option value="Crime">Crime</option>
-          )}
-
-          {movie.genres.includes("Drama") ? (
-            <option value="Drama" selected>
-              Drama
-            </option>
-          ) : (
-            <option value="Drama">Drama</option>
-          )}
-
-          {movie.genres.includes("Espionage") ? (
-            <option value="Espionage" selected>
-              Espionage
-            </option>
-          ) : (
-            <option value="Espionage">Espionage</option>
-          )}
-
-          {movie.genres.includes("Family") ? (
-            <option value="Family" selected>
-              Family
-            </option>
-          ) : (
-            <option value="Family">Family</option>
-          )}
-
-          {movie.genres.includes("Fantasy") ? (
-            <option value="Fantasy" selected>
-              Fantasy
-            </option>
-          ) : (
-            <option value="Fantasy">Fantasy</option>
-          )}
-
-          {movie.genres.includes("History") ? (
-            <option value="History" selected>
-              History
-            </option>
-          ) : (
-            <option value="History">History</option>
-          )}
-
-          {movie.genres.includes("Horror") ? (
-            <option value="Horror" selected>
-              Horror
-            </option>
-          ) : (
-            <option value="Horror">Horror</option>
-          )}
-
-          {movie.genres.includes("Legal") ? (
-            <option value="Legal" selected>
-              Legal
-            </option>
-          ) : (
-            <option value="Legal">Legal</option>
-          )}
-
-          {movie.genres.includes("Medical") ? (
-            <option value="Medical" selected>
-              Medical
-            </option>
-          ) : (
-            <option value="Medical">Medical</option>
-          )}
-
-          {movie.genres.includes("Music") ? (
-            <option value="Music" selected>
-              Music
-            </option>
-          ) : (
-            <option value="Music">Music</option>
-          )}
-
-          {movie.genres.includes("Mystery") ? (
-            <option value="Mystery" selected>
-              Mystery
-            </option>
-          ) : (
-            <option value="Mystery">Mystery</option>
-          )}
-
-          {movie.genres.includes("Romance") ? (
-            <option value="Romance" selected>
-              Romance
-            </option>
-          ) : (
-            <option value="Romance">Romance</option>
-          )}
-
-          {movie.genres.includes("Science-Fiction") ? (
-            <option value="Science-Fiction" selected>
-              Science-Fiction
-            </option>
-          ) : (
-            <option value="Science-Fiction">Science-Fiction</option>
-          )}
-
-          {movie.genres.includes("Sports") ? (
-            <option value="Sports" selected>
-              Sports
-            </option>
-          ) : (
-            <option value="Sports">Sports</option>
-          )}
-
-          {movie.genres.includes("Supernatural") ? (
-            <option value="Supernatural" selected>
-              Supernatural
-            </option>
-          ) : (
-            <option value="Supernatural">Supernatural</option>
-          )}
-
-          {movie.genres.includes("Thriller") ? (
-            <option value="Thriller" selected>
-              Thriller
-            </option>
-          ) : (
-            <option value="Thriller">Thriller</option>
-          )}
-
-          {movie.genres.includes("War") ? (
-            <option value="War" selected>
-              War
-            </option>
-          ) : (
-            <option value="War">War</option>
-          )}
-
-          {movie.genres.includes("Western") ? (
-            <option value="Western" selected>
-              Western
-            </option>
-          ) : (
-            <option value="Western">Western</option>
-          )}
+          {genres.map((genre, index) => {
+            return (
+              <option
+                key={index}
+                value={genre}
+                selected={movie.genres.includes(genre) ? true : false}
+              >
+                {genre}
+              </option>
+            );
+          })}
         </select>
-        <br />
-        <br />
-        Enter the movie image link:
-        <br />{" "}
-        <input
-          style={{ width: "80%" }}
+        <Input
+          text="movie image link"
           type="url"
           value={movie.image}
           onChange={(e) => setMovie({ ...movie, image: e.target.value })}
         />
-        <br />
-        <br />
-        Enter the date the movie premiered: <br />
-        <input
+        <Input
+          text="date the movie premiered"
           type="date"
           value={movie.date}
           onChange={(e) => setMovie({ ...movie, date: e.target.value })}
         />
-        <br />
-        <br />
-        <button onClick={() => send(1)}>Update</button>
-        <button onClick={() => send(2)}>Cancel</button>
-        <br />
-        <br />
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button onClick={updateMovie}>Update</button>
+          <Button link="/main/movies" text="Cancel" />
+        </div>
+        {loading ? <h3>Loading...</h3> : null}
       </div>
-      <br />
     </div>
+  );
+}
+
+function Input(props) {
+  return (
+    <span
+      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+    >
+      Enter the {props.text}:
+      <input type={props.type} onChange={props.onChange} value={props.value} />
+    </span>
   );
 }

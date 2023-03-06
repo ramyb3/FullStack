@@ -1,4 +1,5 @@
 import { apiCalls } from "../other/functions";
+import { Button } from "../other/main";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -40,24 +41,20 @@ export default function AddUser() {
     setUser({ ...user, CM: false, UM: false, DM: false });
   };
 
-  const send = async (method) => {
-    if (method) {
-      if (
-        user.Fname != "" &&
-        user.Lname != "" &&
-        user.Uname != "" &&
-        user.session != 0
-      ) {
-        setLoading(true);
+  const addUser = async () => {
+    if (
+      user.Fname !== "" &&
+      user.Lname !== "" &&
+      user.Uname !== "" &&
+      user.session != 0
+    ) {
+      setLoading(true);
 
-        const obj = { ...user, VS, VM };
-        await apiCalls("post", "addUser", obj);
-        navigate("/main/manageUsers");
-      } else {
-        alert("YOU MUST FILL ALL THE FORM!!");
-      }
-    } else {
+      const obj = { ...user, VS, VM };
+      await apiCalls("post", "addUser", obj);
       navigate("/main/manageUsers");
+    } else {
+      alert("YOU MUST FILL ALL THE FORM!!");
     }
   };
 
@@ -171,8 +168,8 @@ export default function AddUser() {
       })}
 
       <div style={{ display: "flex", gap: "10px" }}>
-        <button onClick={() => send(true)}>Save</button>
-        <button onClick={() => send(false)}>Cancel</button>
+        <button onClick={addUser}>Save</button>
+        <Button link="/main/manageUsers" text="Cancel" />
       </div>
       {loading ? <h3>Loading...</h3> : null}
     </div>

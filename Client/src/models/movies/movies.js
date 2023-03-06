@@ -25,7 +25,7 @@ export default function Movies(props) {
     if (search == "") {
       getData();
     }
-  }, []); //movies || members || subs
+  }, []);
 
   const edit = async (obj) => {
     await apiCalls("delete", `deleteMovie/${obj}`);

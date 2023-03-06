@@ -14,7 +14,7 @@ export default function Main(props) {
         {props.data.perm.includes("View Subscriptions") ? (
           <Button link="subscriptions" text="Subscriptions" />
         ) : null}
-        {props.data.name == "admin" ? (
+        {props.data.name === "admin" ? (
           <Button link="manageUsers" text="Users Management" />
         ) : null}
         <Button link="/" text="Logout" onClick={() => props.setData([])} />

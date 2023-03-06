@@ -15,7 +15,7 @@ export function useSessionCheck() {
   const navigate = useNavigate();
 
   const sessionCheck = (data) => {
-    if (data.name != "admin") {
+    if (data.name !== "admin") {
       if (Date.now() - data.time >= data.timeOut) {
         alert("YOUR TIME IS UP!!");
         navigate("/");

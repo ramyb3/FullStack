@@ -8,7 +8,7 @@ export default function Create() {
   const [loading, setLoading] = useState(false);
 
   const create = async () => {
-    if (user.user != "" && user.psw != "") {
+    if (user.user !== "" && user.psw !== "") {
       setLoading(true);
 
       const resp = await apiCalls("post", "create", user);

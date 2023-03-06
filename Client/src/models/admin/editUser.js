@@ -1,4 +1,5 @@
 import { apiCalls } from "../other/functions";
+import { Button } from "../other/main";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -44,7 +45,7 @@ export default function EditUser() {
     const string = label.includes("Movies") ? "Movies" : "Subscriptions";
 
     if (!e.target.checked) {
-      const arr = perm.filter((data) => data != label);
+      const arr = perm.filter((data) => data !== label);
       setPerm(arr);
     } else {
       if (!perm.includes(`View ${string}`)) {
@@ -69,26 +70,22 @@ export default function EditUser() {
     setPerm(arr);
   };
 
-  const updateUser = async (method) => {
-    if (method) {
-      if (
-        user.Fname != "" &&
-        user.Lname != "" &&
-        user.Uname != "" &&
-        user.session != 0
-      ) {
-        setLoading(true);
+  const updateUser = async () => {
+    if (
+      user.Fname !== "" &&
+      user.Lname !== "" &&
+      user.Uname !== "" &&
+      user.session != 0
+    ) {
+      setLoading(true);
 
-        let obj = user;
-        obj = { ...obj, perm };
+      let obj = user;
+      obj = { ...obj, perm };
 
-        await apiCalls("post", "updateUser", obj);
-        navigate("/main/manageUsers");
-      } else {
-        alert("YOU MUST FILL ALL THE FORM!!");
-      }
-    } else {
+      await apiCalls("post", "updateUser", obj);
       navigate("/main/manageUsers");
+    } else {
+      alert("YOU MUST FILL ALL THE FORM!!");
     }
   };
 
@@ -190,8 +187,8 @@ export default function EditUser() {
         })}
 
         <div style={{ display: "flex", gap: "10px", paddingTop: "15px" }}>
-          <button onClick={() => updateUser(true)}>Update</button>
-          <button onClick={() => updateUser(false)}>Cancel</button>
+          <button onClick={updateUser}>Update</button>
+          <Button link="/main/manageUsers" text="Cancel" />
         </div>
 
         {loading ? <h3>Loading...</h3> : null}

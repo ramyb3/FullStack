@@ -29,15 +29,7 @@ export default function Users() {
       <div className="flex">
         <h2>All Users Page</h2>
         <div style={{ display: "flex", gap: "10px" }}>
-          <Button
-            link=""
-            text="All Users"
-            onClick={() => {
-              setAdd(false);
-              setLoading(true);
-              getUsers();
-            }}
-          />
+          <Button link="" text="All Users" onClick={() => setAdd(false)} />
           <Button link="addUser" text="Add User" onClick={() => setAdd(true)} />
         </div>
         {loading ? <h3>Loading...</h3> : null}

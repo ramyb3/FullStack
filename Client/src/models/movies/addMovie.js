@@ -1,10 +1,12 @@
 import { apiCalls, useSessionCheck } from "../other/functions";
+import { Button } from "../other/main";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 export default function AddMovie(props) {
   const navigate = useNavigate();
   const { sessionCheck } = useSessionCheck();
+  const [loading, setLoading] = useState(false);
   const [movie, setMovie] = useState({
     name: "",
     genres: [],
@@ -16,91 +18,94 @@ export default function AddMovie(props) {
     sessionCheck(props.data);
   }, []);
 
-  const send = async (x) => {
-    if (x == 1) {
-      if (movie.name != "" && movie.genres.length != 0 && movie.date != "") {
-        await apiCalls("post", "addMovie", movie);
-        navigate("/main/movies");
-      } else {
-        alert("YOU MUST FILL ALL THE FORM!!");
-      }
-    }
-
-    if (x == 2) {
+  const addMovie = async () => {
+    if (movie.name !== "" && movie.genres.length > 0 && movie.date !== "") {
+      setLoading(true);
+      await apiCalls("post", "addMovie", movie);
       navigate("/main/movies");
+    } else {
+      alert("YOU MUST FILL ALL THE FORM!!");
     }
   };
 
-  const check = (e) => {
-    let value = Array.from(e.target.selectedOptions, (option) => option.value);
-
-    setMovie({ ...movie, genres: value });
+  const checkGenres = (e) => {
+    const genres = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
+    setMovie({ ...movie, genres });
   };
+
+  const genres = [
+    "Action",
+    "Adventure",
+    "Anime",
+    "Comedy",
+    "Crime",
+    "Drama",
+    "Espionage",
+    "Family",
+    "Fantasy",
+    "History",
+    "Horror",
+    "Legal",
+    "Medical",
+    "Music",
+    "Mystery",
+    "Romance",
+    "Science-Fiction",
+    "Sports",
+    "Supernatural",
+    "Thriller",
+    "War",
+    "Western",
+  ];
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <div className="box">
-        <h2>Add Movie Page</h2>
-        <input
-          placeholder="Enter Movie Name"
-          type="text"
-          onChange={(e) => setMovie({ ...movie, name: e.target.value })}
-        />
-        <br />
-        <br />
-        Select the genres of the movie: <br />
-        <select
-          style={{ width: "200px", textAlign: "center" }}
-          multiple="multiple"
-          onChange={(e) => check(e)}
-        >
-          <option value="Action">Action</option>
-          <option value="Adventure">Adventure </option>
-          <option value="Anime">Anime </option>
-          <option value="Comedy">Comedy </option>
-          <option value="Crime">Crime </option>
-          <option value="Drama">Drama</option>
-          <option value="Espionage">Espionage </option>
-          <option value="Family">Family </option>
-          <option value="Fantasy">Fantasy </option>
-          <option value="History">History </option>
-          <option value="Horror">Horror </option>
-          <option value="Legal">Legal </option>
-          <option value="Medical">Medical </option>
-          <option value="Music">Music </option>
-          <option value="Mystery">Mystery </option>
-          <option value="Romance">Romance </option>
-          <option value="Science-Fiction">Science-Fiction</option>
-          <option value="Sports">Sports</option>
-          <option value="Supernatural">Supernatural </option>
-          <option value="Thriller">Thriller</option>
-          <option value="War">War</option>
-          <option value="Western">Western</option>
-        </select>
-        <br />
-        <br />
-        <input
-          style={{ width: "80%" }}
-          placeholder="Enter Movie Image Link"
-          type="url"
-          onChange={(e) => setMovie({ ...movie, image: e.target.value })}
-        />
-        <br />
-        <br />
+    <div className="box flex" style={{ gap: "10px" }}>
+      <h2>Add Movie Page</h2>
+      <input
+        placeholder="Enter Movie Name"
+        type="text"
+        onChange={(e) => setMovie({ ...movie, name: e.target.value })}
+      />
+      Select the genres of the movie:
+      <select
+        style={{ width: "200px", textAlign: "center", marginTop: "-8px" }}
+        multiple="multiple"
+        onChange={(e) => checkGenres(e)}
+      >
+        {genres.map((genre, index) => {
+          return (
+            <option key={index} value={genre}>
+              {genre}
+            </option>
+          );
+        })}
+      </select>
+      <input
+        placeholder="Enter Movie Image Link"
+        type="url"
+        onChange={(e) => setMovie({ ...movie, image: e.target.value })}
+      />
+      <span
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         Enter the date the movie premiered:
-        <br />{" "}
         <input
           type="date"
           onChange={(e) => setMovie({ ...movie, date: e.target.value })}
         />
-        <br />
-        <br />
-        <button onClick={() => send(1)}>Save</button>
-        <button onClick={() => send(2)}>Cancel</button>
-        <br />
-        <br />
+      </span>
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button onClick={addMovie}>Save</button>
+        <Button link="/main/movies" text="Cancel" />
       </div>
-      <br />
+      {loading ? <h3>Loading...</h3> : null}
     </div>
   );
 }

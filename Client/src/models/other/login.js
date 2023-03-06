@@ -12,7 +12,7 @@ export default function Login(props) {
 
     const resp = await apiCalls("post", "main", user);
 
-    if (resp == "THE USERNAME OR PASSWORD IS INCORRECT!!") {
+    if (resp === "THE USERNAME OR PASSWORD IS INCORRECT!!") {
       alert(resp);
       setLoading(false);
     } else {

@@ -35,7 +35,7 @@ export default function Subs(props) {
 
   return (
     <>
-      <div className="flex">
+      <div className="flex-column">
         <h2>Subscriptions Page</h2>
 
         {props.data.perm.includes("Create Subscriptions") ? (
@@ -54,20 +54,22 @@ export default function Subs(props) {
 
       <Outlet />
 
-      {!add
-        ? members.map((item, index) => {
-            return (
-              <Member
-                key={index}
-                perm={props.data.perm}
-                data={item}
-                subs={subs}
-                movies={movies}
-                refresh={() => setRefresh(true)}
-              />
-            );
-          })
-        : null}
+      <div className="flex-wrap">
+        {!add
+          ? members.map((item, index) => {
+              return (
+                <Member
+                  key={index}
+                  perm={props.data.perm}
+                  data={item}
+                  subs={subs}
+                  movies={movies}
+                  refresh={() => setRefresh(true)}
+                />
+              );
+            })
+          : null}
+      </div>
     </>
   );
 }
@@ -86,7 +88,7 @@ function Member(props) {
   };
 
   return (
-    <div className="box1 flex" style={{ width: "27em", marginBottom: "10px" }}>
+    <div className="box1 flex-column">
       <h2>{props.data.Name}</h2>
 
       <span style={{ fontSize: "20px" }}>Email: {props.data.Email}</span>
@@ -108,48 +110,50 @@ function Member(props) {
       {loading ? <h3>Loading...</h3> : null}
 
       {props.perm.includes("View Movies") ? (
-        <div className="box2" style={{ width: "21em" }}>
+        <div className="box2" style={{ height: "18em" }}>
           <b>
             {props.subs.find((sub) => sub.MemberId === props.data._id)
               ? "The Movies This Member Watched:"
               : "This Member Didn't Watched Any Movie!!"}
           </b>
 
-          {props.subs.map((i, index1) => {
-            return (
-              <ul key={index1}>
-                {i.MemberId === props.data._id
-                  ? i.Movies.map((j, index2) => {
-                      return (
-                        <li key={index2}>
-                          {props.movies.map((k, index3) => {
-                            return j.MovieId === k._id ? (
-                              <div
-                                key={index3}
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  marginLeft: "-30px",
-                                  paddingRight: "5px",
-                                }}
-                              >
-                                <Link to={`/main/movies/${j.MovieId}`}>
-                                  {k.Name}
-                                </Link>
-                                <span>
-                                  {j.Date.slice(8, 10)}/{j.Date.slice(5, 7)}/
-                                  {j.Date.slice(0, 4)}
-                                </span>
-                              </div>
-                            ) : null;
-                          })}
-                        </li>
-                      );
-                    })
-                  : null}
-              </ul>
-            );
-          })}
+          <div className="overflow">
+            {props.subs.map((i, index1) => {
+              return (
+                <ul key={index1}>
+                  {i.MemberId === props.data._id
+                    ? i.Movies.map((j, index2) => {
+                        return (
+                          <li key={index2}>
+                            {props.movies.map((k, index3) => {
+                              return j.MovieId === k._id ? (
+                                <div
+                                  key={index3}
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    marginLeft: "-30px",
+                                    paddingRight: "5px",
+                                  }}
+                                >
+                                  <Link to={`/main/movies/${j.MovieId}`}>
+                                    {k.Name.slice(0, 25)}
+                                  </Link>
+                                  <span>
+                                    {j.Date.slice(8, 10)}/{j.Date.slice(5, 7)}/
+                                    {j.Date.slice(0, 4)}
+                                  </span>
+                                </div>
+                              ) : null;
+                            })}
+                          </li>
+                        );
+                      })
+                    : null}
+                </ul>
+              );
+            })}
+          </div>
 
           <NewSubscription
             id={props.data._id}
@@ -219,7 +223,7 @@ function NewSubscription(props) {
       </button>
       <div
         ref={buttonRef}
-        className="flex"
+        className="flex-column"
         style={{
           visibility: "hidden",
           gap: "10px",

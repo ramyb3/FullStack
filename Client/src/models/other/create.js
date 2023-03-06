@@ -24,7 +24,7 @@ export default function Create() {
   };
 
   return (
-    <div className="box flex" style={{ gap: "15px" }}>
+    <div className="box flex-column" style={{ gap: "15px" }}>
       <h2>Create Account Page</h2>
       <input
         type="text"

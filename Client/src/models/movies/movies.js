@@ -51,7 +51,7 @@ export default function Movies(props) {
 
   return (
     <>
-      <div className="flex">
+      <div className="flex-column">
         <h2>Movies Page</h2>
 
         {props.data.perm.includes("Create Movies") ? (
@@ -80,7 +80,7 @@ export default function Movies(props) {
           style={{
             display: "flex",
             justifyContent: "center",
-            paddingBottom: "10px",
+            padding: "10px",
           }}
         >
           <input
@@ -95,20 +95,22 @@ export default function Movies(props) {
 
       {loading ? <h3 style={{ textAlign: "center" }}>Loading...</h3> : null}
 
-      {!add
-        ? movies.map((item, index) => {
-            return (
-              <Movie
-                key={index}
-                perm={props.data.perm}
-                data={item}
-                subs={subs}
-                members={members}
-                refresh={() => setRefresh(true)}
-              />
-            );
-          })
-        : null}
+      <div className="flex-wrap">
+        {!add
+          ? movies.map((item, index) => {
+              return (
+                <Movie
+                  key={index}
+                  perm={props.data.perm}
+                  data={item}
+                  subs={subs}
+                  members={members}
+                  refresh={() => setRefresh(true)}
+                />
+              );
+            })
+          : null}
+      </div>
     </>
   );
 }
@@ -127,7 +129,7 @@ function Movie(props) {
   };
 
   return (
-    <div className="box1 flex" style={{ width: "27em", marginBottom: "10px" }}>
+    <div className="box1 flex-column">
       <h2>{`${props.data.Name}, ${props.data.Premiered.slice(0, 4)}`}</h2>
       <big style={{ paddingBottom: "10px" }}>
         <b>Genres: </b>
@@ -137,7 +139,7 @@ function Movie(props) {
           }`;
         })}
       </big>
-      <img src={props.data.Image} width="60%" height="60%" />
+      <img src={props.data.Image} width="250px" height="300px" />
       <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
         {props.perm.includes("Update Movies") ? (
           <Button link={`editMovie/${props.data._id}`} text="Edit" />
@@ -154,7 +156,7 @@ function Movie(props) {
       {loading ? <h3>Loading...</h3> : null}
 
       {props.perm.includes("View Subscriptions") ? (
-        <div className="box2" style={{ width: "21em" }}>
+        <div className="box2" style={{ height: "10em" }}>
           <b>
             {props.subs.find((sub) =>
               sub.Movies.find((movie) => movie.MovieId === props.data._id)
@@ -163,39 +165,41 @@ function Movie(props) {
               : "No One Watched This Movie!!"}
           </b>
 
-          {props.subs.map((i) => {
-            return i.Movies.map((j, index1) => {
-              return (
-                <ul>
-                  {j.MovieId === props.data._id ? (
-                    <li key={index1}>
-                      {props.members.map((k, index2) => {
-                        return k._id === i.MemberId ? (
-                          <div
-                            key={index2}
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              marginLeft: "-30px",
-                              paddingRight: "5px",
-                            }}
-                          >
-                            <Link to={`/main/subscriptions/${i.MemberId}`}>
-                              {k.Name}
-                            </Link>
-                            <span>
-                              {j.Date.slice(8, 10)}/{j.Date.slice(5, 7)}/
-                              {j.Date.slice(0, 4)}
-                            </span>
-                          </div>
-                        ) : null;
-                      })}
-                    </li>
-                  ) : null}
-                </ul>
-              );
-            });
-          })}
+          <div className="overflow">
+            {props.subs.map((i) => {
+              return i.Movies.map((j, index1) => {
+                return (
+                  <ul key={index1}>
+                    {j.MovieId === props.data._id ? (
+                      <li>
+                        {props.members.map((k, index2) => {
+                          return k._id === i.MemberId ? (
+                            <div
+                              key={index2}
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                marginLeft: "-30px",
+                                paddingRight: "5px",
+                              }}
+                            >
+                              <Link to={`/main/subscriptions/${i.MemberId}`}>
+                                {k.Name}
+                              </Link>
+                              <span>
+                                {j.Date.slice(8, 10)}/{j.Date.slice(5, 7)}/
+                                {j.Date.slice(0, 4)}
+                              </span>
+                            </div>
+                          ) : null;
+                        })}
+                      </li>
+                    ) : null}
+                  </ul>
+                );
+              });
+            })}
+          </div>
         </div>
       ) : null}
     </div>

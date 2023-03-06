@@ -83,7 +83,10 @@ export default function EditMovie(props) {
     <div style={{ textAlign: "center" }}>
       <h2>Edit Movie Page</h2>
 
-      <div className="box flex" style={{ gap: "10px", paddingTop: "10px" }}>
+      <div
+        className="box flex-column"
+        style={{ gap: "10px", paddingTop: "10px" }}
+      >
         <Input
           text="name of the movie"
           type="text"

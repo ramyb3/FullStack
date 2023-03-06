@@ -62,7 +62,7 @@ export default function AddMovie(props) {
   ];
 
   return (
-    <div className="box flex" style={{ gap: "10px" }}>
+    <div className="box flex-column" style={{ gap: "10px" }}>
       <h2>Add Movie Page</h2>
       <input
         placeholder="Enter Movie Name"

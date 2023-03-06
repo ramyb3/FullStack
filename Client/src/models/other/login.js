@@ -23,7 +23,7 @@ export default function Login(props) {
 
   return (
     <>
-      <div className="box flex" style={{ gap: "15px" }}>
+      <div className="box flex-column" style={{ gap: "15px" }}>
         <h2>Login Page</h2>
         <input
           placeholder="Enter User Name"
@@ -39,7 +39,7 @@ export default function Login(props) {
         {loading ? <h3>Loading...</h3> : null}
         <Link to="/create">CLICK ME IF YOU A NEW USER</Link>
       </div>
-      <div className="flex">
+      <div className="flex-column">
         <h2>Login Instructions:</h2>
         <span>UserName - admin</span>
         <span style={{ paddingBottom: "10px" }}>Password - a</span>

@@ -40,7 +40,7 @@ export default function AddMember(props) {
   ];
 
   return (
-    <div className="box flex" style={{ gap: "10px" }}>
+    <div className="box flex-column" style={{ gap: "10px" }}>
       <h2>Add Member Page</h2>
 
       {inputs.map((input, index) => {

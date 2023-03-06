@@ -26,7 +26,7 @@ export default function Users() {
 
   return (
     <>
-      <div className="flex">
+      <div className="flex-column">
         <h2>All Users Page</h2>
         <div style={{ display: "flex", gap: "10px" }}>
           <Button link="" text="All Users" onClick={() => setAdd(false)} />
@@ -37,11 +37,13 @@ export default function Users() {
 
       <Outlet />
 
-      {!add
-        ? users.map((item, index) => {
-            return <User key={index} func={deleteUser} data={item} />;
-          })
-        : null}
+      <div className="flex-wrap" style={{ height: "250px" }}>
+        {!add
+          ? users.map((item, index) => {
+              return <User key={index} func={deleteUser} data={item} />;
+            })
+          : null}
+      </div>
     </>
   );
 }
@@ -50,7 +52,7 @@ function User(props) {
   const [loading, setLoading] = useState(false);
 
   return (
-    <div className="box1 flex" style={{ marginBottom: "15px" }}>
+    <div className="box1 flex-column" style={{ width: "25em" }}>
       <Span text="Name" data={props.data.name} />
       <Span text="User Name" data={props.data.user} />
       {props.data.user != "admin" ? (

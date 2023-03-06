@@ -1,4 +1,5 @@
 import { apiCalls, useSessionCheck } from "../other/functions";
+import { Button } from "../other/main";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -12,17 +13,13 @@ export default function AddMember(props) {
     sessionCheck(props.data);
   }, []);
 
-  const send = async (method) => {
-    if (method) {
-      if (member.name != "" && member.city != "" && member.email != "") {
-        setLoading(true);
-        await apiCalls("post", "addMember", member);
-        navigate("/main/subscriptions");
-      } else {
-        alert("YOU MUST FILL ALL THE FORM!!");
-      }
-    } else {
+  const addMember = async () => {
+    if (member.name !== "" && member.city !== "" && member.email !== "") {
+      setLoading(true);
+      await apiCalls("post", "addMember", member);
       navigate("/main/subscriptions");
+    } else {
+      alert("YOU MUST FILL ALL THE FORM!!");
     }
   };
 
@@ -60,8 +57,8 @@ export default function AddMember(props) {
       })}
 
       <div style={{ display: "flex", gap: "10px" }}>
-        <button onClick={() => send(true)}>Save</button>
-        <button onClick={() => send(false)}>Cancel</button>
+        <button onClick={addMember}>Save</button>
+        <Button link="/main/subscriptions" text="Cancel" />
       </div>
       {loading ? <h3>Loading...</h3> : null}
     </div>

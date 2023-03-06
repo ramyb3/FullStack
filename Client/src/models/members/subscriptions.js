@@ -1,6 +1,6 @@
 import { Button } from "../other/main";
 import { apiCalls, useSessionCheck } from "../other/functions";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
 export default function Subs(props) {
@@ -10,20 +10,28 @@ export default function Subs(props) {
   const [subs, setSubs] = useState([]);
   const [add, setAdd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+
+  const getAllData = async () => {
+    const resp = await apiCalls("get", "");
+    setMovies(resp[0]);
+    setMembers(resp[1]);
+    setSubs(resp[2]);
+    setLoading(false);
+    setRefresh(false);
+  };
 
   useEffect(() => {
-    const getAllData = async () => {
-      const resp = await getData();
-      setMovies(resp[0]);
-      setMembers(resp[1]);
-      setSubs(resp[2]);
-      setLoading(false);
-    };
-
     setLoading(true);
     sessionCheck(props.data);
     getAllData();
   }, []);
+
+  useEffect(() => {
+    if (refresh) {
+      getAllData();
+    }
+  }, [refresh]);
 
   return (
     <>
@@ -55,8 +63,7 @@ export default function Subs(props) {
                 data={item}
                 subs={subs}
                 movies={movies}
-                // setMovies={setMovies}
-                // setSubs={setSubs}
+                refresh={() => setRefresh(true)}
               />
             );
           })
@@ -65,24 +72,17 @@ export default function Subs(props) {
   );
 }
 
-//check if needed
-async function getData() {
-  const resp = await apiCalls("get", "");
-  return resp;
-}
-
 function Member(props) {
   const [loading, setLoading] = useState(false);
 
   const deleteMember = async (obj) => {
     setLoading(true);
     await apiCalls("delete", `deleteMember/${obj}`);
+    await props.refresh();
 
-    const resp = await getData();
-    // props.setMovies(resp[0]);
-    // props.setSubs(resp[2]);
-
-    setLoading(false);
+    setTimeout(() => {
+      setLoading(false);
+    }, 5000);
   };
 
   return (
@@ -118,12 +118,12 @@ function Member(props) {
           {props.subs.map((i, index1) => {
             return (
               <ul key={index1}>
-                {i.MemberId == props.data._id
+                {i.MemberId === props.data._id
                   ? i.Movies.map((j, index2) => {
                       return (
                         <li key={index2}>
                           {props.movies.map((k, index3) => {
-                            return j.MovieId == k._id ? (
+                            return j.MovieId === k._id ? (
                               <div
                                 key={index3}
                                 style={{
@@ -155,8 +155,7 @@ function Member(props) {
             id={props.data._id}
             movies={props.movies}
             subs={props.subs}
-            // setMovies={props.setMovies}
-            // setSubs={props.setSubs}
+            refresh={props.refresh}
           />
         </div>
       ) : null}
@@ -168,10 +167,13 @@ function NewSubscription(props) {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newSub, setNewSub] = useState({ id: props.id, movie: "", date: "" });
+  const buttonRef = useRef(null);
+  const dateRef = useRef(null);
+  const selectRef = useRef(null);
 
   useEffect(() => {
     const arr = [];
-    const sub = props.subs.find((data) => data.MemberId == props.id);
+    const sub = props.subs.find((data) => data.MemberId === props.id);
 
     setList(props.movies);
 
@@ -182,28 +184,32 @@ function NewSubscription(props) {
 
       setList(props.movies.filter((data) => !arr.includes(data._id)));
     }
-  }, [props]);
+  }, [props.subs]);
 
   const addSub = async () => {
-    if (newSub.movie != "" && newSub.date != "") {
+    selectRef.current.value = "";
+    dateRef.current.value = "";
+
+    if (newSub.movie !== "" && newSub.date !== "") {
+      showOrHide(props.id);
       setLoading(true);
       await apiCalls("post", "addSubs", newSub);
+      await props.refresh();
+      setNewSub({ id: props.id, movie: "", date: "" });
 
-      const resp = await getData();
-      // props.setMovies(resp[0]);
-      // props.setSubs(resp[2]);
-
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 5000);
     } else {
       alert("YOU MUST FILL ALL THE FORM!!");
     }
   };
 
-  const showOrHide = (obj) => {
-    document.getElementById(obj).style.visibility =
-      document.getElementById(obj).style.visibility == "hidden"
-        ? "visible"
-        : "hidden";
+  const showOrHide = () => {
+    if (!loading) {
+      buttonRef.current.style.visibility =
+        buttonRef.current.style.visibility === "hidden" ? "visible" : "hidden";
+    }
   };
 
   return (
@@ -212,7 +218,7 @@ function NewSubscription(props) {
         Subscribe to a new movie
       </button>
       <div
-        id={props.id}
+        ref={buttonRef}
         className="flex"
         style={{
           visibility: "hidden",
@@ -222,6 +228,8 @@ function NewSubscription(props) {
       >
         <b>Add new movie:</b>
         <select
+          style={{ textAlign: "center" }}
+          ref={selectRef}
           onChange={(e) => setNewSub({ ...newSub, movie: e.target.value })}
         >
           <option value="">--Select Movie--</option>
@@ -235,12 +243,13 @@ function NewSubscription(props) {
           })}
         </select>
         <input
+          ref={dateRef}
           type="date"
           onChange={(e) => setNewSub({ ...newSub, date: e.target.value })}
         />
         <Button link="" onClick={addSub} text="Subscribe" />
-        {loading ? <h3>Loading...</h3> : null}
       </div>
+      {loading ? <h3>Loading...</h3> : null}
     </>
   );
 }

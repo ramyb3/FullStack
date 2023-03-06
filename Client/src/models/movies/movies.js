@@ -1,8 +1,7 @@
 import { apiCalls, useSessionCheck } from "../other/functions";
+import { Button } from "../other/main";
 import { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import Comp from "./comp1";
-import { Button } from "../other/main";
 
 export default function Movies(props) {
   const { sessionCheck } = useSessionCheck();
@@ -12,38 +11,42 @@ export default function Movies(props) {
   const [add, setAdd] = useState(false);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
-  useEffect(() => {
-    const getData = async () => {
-      const resp = await apiCalls("get", "");
-      setMovies(resp[0]);
-      setMembers(resp[1]);
-      setSubs(resp[2]);
-    };
-
-    sessionCheck(props.data);
-
-    if (search == "") {
-      getData();
-    }
-  }, []);
-
-  const deleteMovie = async (obj) => {
-    await apiCalls("delete", `deleteMovie/${obj}`);
-  };
-
-  const find = async () => {
-    let resp;
-
-    if (search != "") {
-      resp = await apiCalls("post", `findMovies/${search}`);
-    } else {
-      resp = await apiCalls("get", "");
-    }
-
+  const getAllData = async () => {
+    const resp = await apiCalls("get", "");
     setMovies(resp[0]);
     setMembers(resp[1]);
     setSubs(resp[2]);
+    setLoading(false);
+    setRefresh(false);
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    sessionCheck(props.data);
+    getAllData();
+  }, []);
+
+  useEffect(() => {
+    if (refresh || !add) {
+      getAllData();
+    }
+  }, [refresh, add]);
+
+  const find = async () => {
+    if (search !== "") {
+      setLoading(true);
+
+      const resp = await apiCalls("post", `findMovies/${search}`);
+      setMovies(resp[0]);
+      setMembers(resp[1]);
+      setSubs(resp[2]);
+      setLoading(false);
+      setRefresh(false);
+    } else {
+      await getAllData();
+    }
   };
 
   return (
@@ -53,19 +56,21 @@ export default function Movies(props) {
 
         {props.data.perm.includes("Create Movies") ? (
           <div style={{ display: "flex", gap: "10px" }}>
-            <Button link="" text="All Movies" onClick={() => setAdd(false)} />
+            <Button
+              link=""
+              text="All Movies"
+              onClick={() => {
+                setLoading(true);
+                setAdd(false);
+              }}
+            />
             <Button
               link="addMovie"
               text="Add Movie"
-              onClick={() => {
-                setAdd(true);
-                setSearch("");
-              }}
+              onClick={() => setAdd(true)}
             />
           </div>
         ) : null}
-
-        {loading ? <h3>Loading...</h3> : null}
       </div>
 
       <Outlet />
@@ -88,85 +93,111 @@ export default function Movies(props) {
         </div>
       ) : null}
 
+      {loading ? <h3 style={{ textAlign: "center" }}>Loading...</h3> : null}
+
       {!add
         ? movies.map((item, index) => {
             return (
-              <div
+              <Movie
                 key={index}
-                className="box1 flex"
-                style={{ width: "27em", marginBottom: "10px" }}
-              >
-                <h2>{`${item.Name}, ${item.Premiered.slice(0, 4)}`}</h2>
-                <big style={{ paddingBottom: "10px" }}>
-                  <b>Genres: </b>
-                  {item.Genres.map((genre, index) => {
-                    return `${genre}${
-                      index !== item.Genres.length - 1 ? ", " : ""
-                    }`;
-                  })}
-                </big>
-                <img src={item.Image} width="60%" height="60%" />
-                <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
-                  {props.data.perm.includes("Update Movies") ? (
-                    <Button link={`editMovie/${item._id}`} text="Edit" />
-                  ) : null}
-                  {props.data.perm.includes("Delete Movies") ? (
-                    <Button
-                      link=""
-                      text="Delete"
-                      onClick={() => deleteMovie(item._id)}
-                    />
-                  ) : null}
-                </div>
-
-                {props.data.perm.includes("View Subscriptions") ? (
-                  <div className="box2" style={{ width: "21em" }}>
-                    <b>
-                      <Comp data={item} subs={subs} />
-                    </b>
-
-                    {subs.map((i) => {
-                      return i.Movies.map((j, index1) => {
-                        return (
-                          <ul>
-                            {j.MovieId === item._id ? (
-                              <li key={index1}>
-                                {members.map((k, index2) => {
-                                  return k._id === i.MemberId ? (
-                                    <div
-                                      key={index2}
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        marginLeft: "-30px",
-                                        paddingRight: "5px",
-                                      }}
-                                    >
-                                      <Link
-                                        to={`/main/subscriptions/${i.MemberId}`}
-                                      >
-                                        {k.Name}
-                                      </Link>
-                                      <span>
-                                        {j.Date.slice(8, 10)}/
-                                        {j.Date.slice(5, 7)}/
-                                        {j.Date.slice(0, 4)}
-                                      </span>
-                                    </div>
-                                  ) : null;
-                                })}
-                              </li>
-                            ) : null}
-                          </ul>
-                        );
-                      });
-                    })}
-                  </div>
-                ) : null}
-              </div>
+                perm={props.data.perm}
+                data={item}
+                subs={subs}
+                members={members}
+                refresh={() => setRefresh(true)}
+              />
             );
           })
         : null}
     </>
+  );
+}
+
+function Movie(props) {
+  const [loading, setLoading] = useState(false);
+
+  const deleteMovie = async (obj) => {
+    setLoading(true);
+    await apiCalls("delete", `deleteMovie/${obj}`);
+    await props.refresh();
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+  };
+
+  return (
+    <div className="box1 flex" style={{ width: "27em", marginBottom: "10px" }}>
+      <h2>{`${props.data.Name}, ${props.data.Premiered.slice(0, 4)}`}</h2>
+      <big style={{ paddingBottom: "10px" }}>
+        <b>Genres: </b>
+        {props.data.Genres.map((genre, index) => {
+          return `${genre}${
+            index !== props.data.Genres.length - 1 ? ", " : ""
+          }`;
+        })}
+      </big>
+      <img src={props.data.Image} width="60%" height="60%" />
+      <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
+        {props.perm.includes("Update Movies") ? (
+          <Button link={`editMovie/${props.data._id}`} text="Edit" />
+        ) : null}
+        {props.perm.includes("Delete Movies") ? (
+          <Button
+            link=""
+            text="Delete"
+            onClick={() => deleteMovie(props.data._id)}
+          />
+        ) : null}
+      </div>
+
+      {loading ? <h3>Loading...</h3> : null}
+
+      {props.perm.includes("View Subscriptions") ? (
+        <div className="box2" style={{ width: "21em" }}>
+          <b>
+            {props.subs.find((sub) =>
+              sub.Movies.find((movie) => movie.MovieId === props.data._id)
+            )
+              ? "The Members Who Watched This Movie:"
+              : "No One Watched This Movie!!"}
+          </b>
+
+          {props.subs.map((i) => {
+            return i.Movies.map((j, index1) => {
+              return (
+                <ul>
+                  {j.MovieId === props.data._id ? (
+                    <li key={index1}>
+                      {props.members.map((k, index2) => {
+                        return k._id === i.MemberId ? (
+                          <div
+                            key={index2}
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginLeft: "-30px",
+                              paddingRight: "5px",
+                            }}
+                          >
+                            <Link to={`/main/subscriptions/${i.MemberId}`}>
+                              {k.Name}
+                            </Link>
+                            <span>
+                              {j.Date.slice(8, 10)}/{j.Date.slice(5, 7)}/
+                              {j.Date.slice(0, 4)}
+                            </span>
+                          </div>
+                        ) : null;
+                      })}
+                    </li>
+                  ) : null}
+                </ul>
+              );
+            });
+          })}
+        </div>
+      ) : null}
+    </div>
   );
 }

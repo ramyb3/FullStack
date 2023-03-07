@@ -7,7 +7,7 @@ export default function Login(props) {
   const [user, setUser] = useState({ user: "", psw: "" });
   const [loading, setLoading] = useState(false);
 
-  const send = async () => {
+  const login = async () => {
     setLoading(true);
 
     const resp = await apiCalls("post", "main", user);
@@ -35,7 +35,7 @@ export default function Login(props) {
           type="password"
           onChange={(e) => setUser({ ...user, psw: e.target.value })}
         />
-        <button onClick={send}>Login</button>
+        <button onClick={login}>Login</button>
         {loading ? <h3>Loading...</h3> : null}
         <Link to="/create">CLICK ME IF YOU A NEW USER</Link>
       </div>

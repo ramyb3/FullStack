@@ -1,12 +1,13 @@
 import { apiCalls, useSessionCheck } from "../other/functions";
+import { Button } from "../other/main";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Button } from "../other/main";
 
 export default function Movie(props) {
   const params = useParams();
   const { sessionCheck } = useSessionCheck();
   const [subs, setSubs] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [movie, setMovie] = useState({
     id: 0,
     name: "",
@@ -27,83 +28,81 @@ export default function Movie(props) {
         image: resp[1].Image,
         date: resp[1].Premiered,
       });
+
+      setLoading(false);
     };
 
     sessionCheck(props.data);
+    setLoading(true);
     getMovie();
   }, []);
 
-  const edit = async () => {
+  const deleteMovie = async () => {
     await apiCalls("delete", `deleteMovie/${movie.id}`);
   };
 
   return (
-    <div>
-      <br />
-      <br />
-      <div className="box1">
-        <h2>
-          {" "}
-          {movie.name}, {movie.date.slice(0, 4)}{" "}
-        </h2>
-        <big>
-          <b> Genres: </b>
-          {movie.genres.map((x, index) => {
-            return (
-              <>{index != movie.genres.length - 1 ? <> {x}, </> : <> {x} </>}</>
-            );
-          })}
-          <br />
-          <br />
-        </big>
+    <div className="flex-column" style={{ marginTop: "10px" }}>
+      {loading ? (
+        <h3>Loading...</h3>
+      ) : (
+        <div className="box1 flex-column">
+          <h2>{`${movie.name}, ${movie.date.slice(0, 4)}`}</h2>
 
-        <img src={movie.image} width="60%" height="60%" />
-        <br />
-        <br />
-
-        {props.data.perm.includes("Update Movies") ? (
-          <Button link={`/main/movies/editMovie/${movie.id}`} text="Edit" />
-        ) : null}
-
-        {props.data.perm.includes("Delete Movies") ? (
-          <Button link="/main/movies" text="Delete" onClick={edit} />
-        ) : null}
-        <br />
-        <br />
-
-        <div className="box2">
-          <big>
-            <b>
-              {subs.length == 0 ? (
-                <>No One Watched This Movie!! </>
-              ) : (
-                <>The Members Who Watched This Movie: </>
-              )}
-            </b>
-            <br />
-
-            {subs.map((i) => {
-              return (
-                <ul>
-                  <li>
-                    {
-                      <div>
-                        <Link to={"/main/subscriptions/" + i.member._id}>
-                          {i.member.Name}
-                        </Link>
-                        &nbsp;,&nbsp;
-                        {i.date.slice(8, 10)}/{i.date.slice(5, 7)}/
-                        {i.date.slice(0, 4)}
-                      </div>
-                    }
-                  </li>
-                </ul>
-              );
+          <big style={{ paddingBottom: "10px" }}>
+            <b>Genres: </b>
+            {movie.genres.map((genre, index) => {
+              return `${genre}${index !== movie.genres.length - 1 ? ", " : ""}`;
             })}
           </big>
+
+          <img src={movie.image} width="250px" height="300px" />
+
+          <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
+            {props.data.perm.includes("Update Movies") ? (
+              <Button link={`/main/movies/editMovie/${movie.id}`} text="Edit" />
+            ) : null}
+            {props.data.perm.includes("Delete Movies") ? (
+              <Button link="/main/movies" text="Delete" onClick={deleteMovie} />
+            ) : null}
+          </div>
+
+          <div className="box2" style={{ height: "10em" }}>
+            <b>
+              {subs.length > 0
+                ? "The Members Who Watched This Movie:"
+                : "No One Watched This Movie!!"}
+            </b>
+
+            <div className="overflow">
+              {subs.map((sub, index) => {
+                return (
+                  <ul key={index}>
+                    <li>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          marginLeft: "-30px",
+                          paddingRight: "5px",
+                        }}
+                      >
+                        <Link to={`/main/subscriptions/${sub.member._id}`}>
+                          {sub.member.Name}
+                        </Link>
+                        <span>
+                          {sub.date.slice(8, 10)}/{sub.date.slice(5, 7)}/
+                          {sub.date.slice(0, 4)}
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </div>
-      <br />
+      )}
     </div>
   );
 }

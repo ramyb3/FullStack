@@ -154,11 +154,7 @@ function Movie(props) {
               <Button link={`editMovie/${props.data._id}`} text="Edit" />
             ) : null}
             {props.perm.includes("Delete Movies") ? (
-              <Button
-                link=""
-                text="Delete"
-                onClick={() => deleteMovie(props.data._id)}
-              />
+              <button onClick={() => deleteMovie(props.data._id)}>Delete</button>
             ) : null}
           </div>
 

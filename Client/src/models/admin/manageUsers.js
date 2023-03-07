@@ -72,14 +72,14 @@ function User(props) {
           }}
         >
           <Button link={`editUser/${props.data.id}`} text="Edit" />
-          <Button
-            link=""
-            text="Delete"
+          <button
             onClick={() => {
               setLoading(true);
               props.func(props.data.id);
             }}
-          />
+          >
+            Delete
+          </button>
         </div>
       ) : null}
 

@@ -103,11 +103,7 @@ function Member(props) {
               <Button link={`editMember/${props.data._id}`} text="Edit" />
             ) : null}
             {props.perm.includes("Delete Subscriptions") ? (
-              <Button
-                link=""
-                onClick={() => deleteMember(props.data._id)}
-                text="Delete"
-              />
+              <button onClick={() => deleteMember(props.data._id)}>Delete</button>
             ) : null}
           </div>
 
@@ -195,23 +191,23 @@ function NewSubscription(props) {
     }
   }, [props.subs]);
 
-  const addSub = async () => {
-    selectRef.current.value = "";
-    dateRef.current.value = "";
-
-    if (newSub.movie !== "" && newSub.date !== "") {
-      showOrHide(props.id);
+  const addSubs = async () => {
+    if (newSub.movie === "" || newSub.date === "") {
+      alert("YOU MUST FILL ALL THE FORM!!");
+    } else {
+      showOrHide();
       setLoading(true);
       await apiCalls("post", "addSubs", newSub);
       await props.refresh();
-      setNewSub({ id: props.id, movie: "", date: "" });
 
       setTimeout(() => {
         setLoading(false);
       }, 5000);
-    } else {
-      alert("YOU MUST FILL ALL THE FORM!!");
     }
+
+    selectRef.current.value = "";
+    dateRef.current.value = "";
+    setNewSub({ id: props.id, movie: "", date: "" });
   };
 
   const showOrHide = () => {
@@ -223,9 +219,7 @@ function NewSubscription(props) {
 
   return (
     <>
-      <button onClick={() => showOrHide(props.id)}>
-        Subscribe to a new movie
-      </button>
+      <button onClick={showOrHide}>Subscribe to a new movie</button>
       {loading ? (
         <h3>Loading...</h3>
       ) : (
@@ -240,7 +234,6 @@ function NewSubscription(props) {
         >
           <b>Add new movie:</b>
           <select
-            style={{ textAlign: "center" }}
             ref={selectRef}
             onChange={(e) => setNewSub({ ...newSub, movie: e.target.value })}
           >
@@ -259,7 +252,7 @@ function NewSubscription(props) {
             type="date"
             onChange={(e) => setNewSub({ ...newSub, date: e.target.value })}
           />
-          <Button link="" onClick={addSub} text="Subscribe" />
+          <button onClick={addSubs}>Subscribe</button>
         </div>
       )}
     </>

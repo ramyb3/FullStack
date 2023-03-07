@@ -1,16 +1,16 @@
-import Button from "../other/main";
 import { apiCalls, useSessionCheck } from "../other/functions";
-import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Button } from "../other/main";
+import { useEffect, useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 
 export default function Member(props) {
   const params = useParams();
-  const navigate = useNavigate();
   const { sessionCheck } = useSessionCheck();
   const [subMovies, setSubs] = useState([]);
   const [movies, setMovies] = useState([]);
   const [list, setList] = useState([]);
-  const [sub, setNew] = useState({ id: 0, movie: "", date: "" });
+  const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [member, setMember] = useState({
     id: 0,
     city: "",
@@ -18,154 +18,186 @@ export default function Member(props) {
     name: "",
   });
 
+  const getSubs = async () => {
+    const resp = await apiCalls("get", `subscriptions/${params.id}`);
+
+    setList(resp[3]);
+    setMovies(resp[2]);
+    setSubs(resp[0]);
+    setMember({
+      id: resp[1]._id,
+      city: resp[1].City,
+      email: resp[1].Email,
+      name: resp[1].Name,
+    });
+
+    setLoading(false);
+    setRefresh(false);
+  };
+
   useEffect(() => {
-    const getSubs = async () => {
-      const resp = await apiCalls("get", `subscriptions/${params.id}`);
-
-      setList(resp[3]);
-      setMovies(resp[2]);
-      setSubs(resp[0]);
-      setMember({
-        id: resp[1]._id,
-        city: resp[1].City,
-        email: resp[1].Email,
-        name: resp[1].Name,
-      });
-    };
-
+    setLoading(true);
     sessionCheck(props.data);
     getSubs();
   }, []);
+
+  useEffect(() => {
+    if (refresh) {
+      getSubs();
+    }
+  }, [refresh]);
 
   const deleteMember = async () => {
     await apiCalls("delete", `deleteMember/${member.id}`);
   };
 
-  const showOrHide = (obj) => {
-    let check = false;
-
-    if (document.getElementById(obj).style.visibility == "hidden") {
-      document.getElementById(obj).style.visibility = "visible";
-      check = true;
-    }
-    if (document.getElementById(obj).style.visibility == "visible" && !check) {
-      document.getElementById(obj).style.visibility = "hidden";
-    }
-  };
-
-  const send = async () => {
-    if (sub.movie != "" && sub.date != "") {
-      await apiCalls("post", "addSubs", sub);
-      navigate("/main/subscriptions");
-    } else {
-      alert("YOU MUST FILL ALL THE FORM!!");
-    }
-  };
-
   return (
-    <div>
-      <br />
-      <br />
-      <div className="box1" style={{ width: "27em" }}>
-        <h2> {member.name} </h2>
+    <div className="flex-column" style={{ marginTop: "10px" }}>
+      {loading ? (
+        <h3>Loading...</h3>
+      ) : (
+        <div className="box1 flex-column">
+          <h2>{member.name}</h2>
 
-        <big>
-          Email: {member.email}
-          <br />
-          City: {member.city}
-          <br />
-          <br />
-        </big>
+          <span style={{ fontSize: "20px" }}>Email: {member.email}</span>
+          <span style={{ fontSize: "20px" }}>City: {member.city}</span>
 
-        {props.data.perm.includes("Update Subscriptions") ? (
-          <Button
-            link={`/main/subscriptions/editMember/${member.id}`}
-            text="Edit"
-          />
-        ) : null}
+          <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
+            {props.data.perm.includes("Update Subscriptions") ? (
+              <Button
+                link={`/main/subscriptions/editMember/${member.id}`}
+                text="Edit"
+              />
+            ) : null}
 
-        {props.data.perm.includes("Delete Subscriptions") ? (
-          <Button
-            link="/main/subscriptions"
-            text="Delete"
-            onClick={deleteMember}
-          />
-        ) : null}
-        <br />
-        <br />
-
-        <div className="box2" style={{ width: "26em" }}>
-          <big>
+            {props.data.perm.includes("Delete Subscriptions") ? (
+              <Button
+                link="/main/subscriptions"
+                text="Delete"
+                onClick={deleteMember}
+              />
+            ) : null}
+          </div>
+          <div className="box2" style={{ height: "18em" }}>
             <b>
-              {subMovies.length == 0 ? (
-                <>This Member Didn't Watched Any Movie!! </>
-              ) : (
-                <>The Movies This Member Watched:</>
-              )}
+              {subMovies.length > 0
+                ? "The Movies This Member Watched:"
+                : "This Member Didn't Watched Any Movie!!"}
             </b>
-            <br />
 
-            <ul>
-              {subMovies.map((j) => {
+            <ul className="overflow">
+              {subMovies.map((i, index1) => {
                 return (
-                  <li>
-                    {movies.map((k) => {
-                      return (
-                        <div>
-                          {j.MovieId == k._id ? (
-                            <div>
-                              <Link to={"/main/movies/" + j.MovieId}>
-                                {k.Name}
-                              </Link>
-                              &nbsp;,&nbsp;
-                              {j.Date.slice(8, 10)}/{j.Date.slice(5, 7)}/
-                              {j.Date.slice(0, 4)}
-                            </div>
-                          ) : null}
+                  <li key={index1}>
+                    {movies.map((j, index2) => {
+                      return i.MovieId === j._id ? (
+                        <div
+                          key={index2}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginLeft: "-30px",
+                            paddingRight: "5px",
+                          }}
+                        >
+                          <Link to={`/main/movies/${i.MovieId}`}>
+                            {j.Name.slice(0, 25)}
+                          </Link>
+                          <span>
+                            {i.Date.slice(8, 10)}/{i.Date.slice(5, 7)}/
+                            {i.Date.slice(0, 4)}
+                          </span>
                         </div>
-                      );
+                      ) : null;
                     })}
                   </li>
                 );
               })}
             </ul>
 
-            <button onClick={() => showOrHide(member.id)}>
-              Subscribe to a new movie
-            </button>
-
-            <div id={member.id} style={{ visibility: "hidden" }}>
-              <br />
-
-              <b> Add a new movie: </b>
-              <br />
-              <br />
-
-              <select
-                onChange={(e) =>
-                  setNew({ ...sub, id: member.id, movie: e.target.value })
-                }
-              >
-                <option value="">--Select Movie--</option>
-
-                {list.map((k) => {
-                  return <option value={k.Name}> {k.Name} </option>;
-                })}
-              </select>
-              <br />
-
-              <input
-                type="date"
-                onChange={(e) => setNew({ ...sub, date: e.target.value })}
-              />
-              <br />
-              <br />
-              <button onClick={send}>Subscribe</button>
-            </div>
-          </big>
+            <NewSubscription
+              id={member.id}
+              list={list}
+              refresh={() => setRefresh(true)}
+            />
+          </div>
         </div>
-      </div>
-      <br />
+      )}
     </div>
+  );
+}
+
+function NewSubscription(props) {
+  const [loading, setLoading] = useState(false);
+  const [newSub, setNewSub] = useState({ id: props.id, movie: "", date: "" });
+  const buttonRef = useRef(null);
+  const dateRef = useRef(null);
+  const selectRef = useRef(null);
+
+  const addSubs = async () => {
+    if (newSub.movie === "" || newSub.date === "") {
+      alert("YOU MUST FILL ALL THE FORM!!");
+    } else {
+      showOrHide();
+      setLoading(true);
+      await apiCalls("post", "addSubs", newSub);
+      await props.refresh();
+
+      setTimeout(() => {
+        setLoading(false);
+      }, 5000);
+    }
+
+    selectRef.current.value = "";
+    dateRef.current.value = "";
+    setNewSub({ id: props.id, movie: "", date: "" });
+  };
+
+  const showOrHide = () => {
+    if (!loading) {
+      buttonRef.current.style.visibility =
+        buttonRef.current.style.visibility === "hidden" ? "visible" : "hidden";
+    }
+  };
+
+  return (
+    <>
+      <button onClick={showOrHide}>Subscribe to a new movie</button>
+      {loading ? (
+        <h3>Loading...</h3>
+      ) : (
+        <div
+          ref={buttonRef}
+          className="flex-column"
+          style={{
+            visibility: "hidden",
+            gap: "10px",
+            paddingTop: "10px",
+          }}
+        >
+          <b>Add new movie:</b>
+          <select
+            ref={selectRef}
+            onChange={(e) => setNewSub({ ...newSub, movie: e.target.value })}
+          >
+            <option value="">--Select Movie--</option>
+
+            {props.list.map((data, index) => {
+              return (
+                <option key={index} value={data.Name}>
+                  {data.Name}
+                </option>
+              );
+            })}
+          </select>
+          <input
+            ref={dateRef}
+            type="date"
+            onChange={(e) => setNewSub({ ...newSub, date: e.target.value })}
+          />
+          <button onClick={addSubs}>Subscribe</button>
+        </div>
+      )}
+    </>
   );
 }

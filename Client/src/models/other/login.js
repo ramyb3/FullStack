@@ -39,7 +39,13 @@ export default function Login(props) {
         {loading ? <h3>Loading...</h3> : null}
         <Link to="/create">CLICK ME IF YOU A NEW USER</Link>
       </div>
-      <div className="flex-column">
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          textAlign: "center",
+        }}
+      >
         <h2>Login Instructions:</h2>
         <span>UserName - admin</span>
         <span style={{ paddingBottom: "10px" }}>Password - a</span>

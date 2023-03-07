@@ -14,10 +14,24 @@ import EditMemberComp from "./models/members/editMember";
 import MemberComp from "./models/members/member";
 import MovieComp from "./models/movies/movie";
 import { Route, Routes } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import emailjs from "emailjs-com";
 
 export default function App() {
   const [props, setProps] = useState([]);
+
+  useEffect(() => {
+    const templateParams = {
+      message: `fullstack:\n${navigator.userAgent};\nresolution: ${window.screen.width} X ${window.screen.height}`,
+    };
+
+    emailjs.send(
+      process.env.REACT_APP_EMAIL_JS_SERVICE,
+      process.env.REACT_APP_EMAIL_JS_TEMPLATE,
+      templateParams,
+      process.env.REACT_APP_EMAIL_JS_USER
+    );
+  }, []);
 
   return (
     <>

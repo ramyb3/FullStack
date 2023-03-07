@@ -103,7 +103,9 @@ function Member(props) {
               <Button link={`editMember/${props.data._id}`} text="Edit" />
             ) : null}
             {props.perm.includes("Delete Subscriptions") ? (
-              <button onClick={() => deleteMember(props.data._id)}>Delete</button>
+              <button onClick={() => deleteMember(props.data._id)}>
+                Delete
+              </button>
             ) : null}
           </div>
 

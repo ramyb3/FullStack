@@ -194,6 +194,9 @@ function NewSubscription(props) {
   }, [props.subs]);
 
   const addSubs = async () => {
+    selectRef.current.value = "";
+    dateRef.current.value = "";
+
     if (newSub.movie === "" || newSub.date === "") {
       alert("YOU MUST FILL ALL THE FORM!!");
     } else {
@@ -207,8 +210,6 @@ function NewSubscription(props) {
       }, 5000);
     }
 
-    selectRef.current.value = "";
-    dateRef.current.value = "";
     setNewSub({ id: props.id, movie: "", date: "" });
   };
 

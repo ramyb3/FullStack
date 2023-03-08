@@ -1,7 +1,7 @@
+import AddUser from "./addUser";
 import { Button } from "../other/main";
 import { apiCalls } from "../other/functions";
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
@@ -15,9 +15,11 @@ export default function Users() {
   };
 
   useEffect(() => {
-    setLoading(true);
-    getUsers();
-  }, []);
+    if (!add) {
+      setLoading(true);
+      getUsers();
+    }
+  }, [add]);
 
   const deleteUser = async (user) => {
     await apiCalls("delete", `deleteUser/${user}`);
@@ -35,14 +37,14 @@ export default function Users() {
         {loading ? <h3>Loading...</h3> : null}
       </div>
 
-      <Outlet />
-
       <div className="flex-wrap" style={{ height: "250px" }}>
-        {!add
-          ? users.map((item, index) => {
-              return <User key={index} func={deleteUser} data={item} />;
-            })
-          : null}
+        {!add ? (
+          users.map((item, index) => {
+            return <User key={index} func={deleteUser} data={item} />;
+          })
+        ) : (
+          <AddUser setAdd={() => setAdd(false)} />
+        )}
       </div>
     </>
   );

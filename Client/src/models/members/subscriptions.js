@@ -1,7 +1,8 @@
+import AddMember from "./addMember";
 import { Button } from "../other/main";
 import { apiCalls, useSessionCheck } from "../other/functions";
 import { useEffect, useRef, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Subs(props) {
   const { sessionCheck } = useSessionCheck();
@@ -12,6 +13,21 @@ export default function Subs(props) {
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
 
+  useEffect(() => {
+    setLoading(true);
+    getAllData();
+  }, []);
+
+  useEffect(() => {
+    sessionCheck(props.data);
+  }, [add]);
+
+  useEffect(() => {
+    if (refresh) {
+      getAllData();
+    }
+  }, [refresh]);
+
   const getAllData = async () => {
     const resp = await apiCalls("get", "");
     setMovies(resp[0]);
@@ -20,18 +36,6 @@ export default function Subs(props) {
     setLoading(false);
     setRefresh(false);
   };
-
-  useEffect(() => {
-    setLoading(true);
-    sessionCheck(props.data);
-    getAllData();
-  }, []);
-
-  useEffect(() => {
-    if (refresh) {
-      getAllData();
-    }
-  }, [refresh]);
 
   return (
     <>
@@ -52,23 +56,28 @@ export default function Subs(props) {
         {loading ? <h3>Loading...</h3> : null}
       </div>
 
-      <Outlet />
-
       <div className="flex-wrap">
-        {!add
-          ? members.map((item, index) => {
-              return (
-                <Member
-                  key={index}
-                  perm={props.data.perm}
-                  data={item}
-                  subs={subs}
-                  movies={movies}
-                  refresh={() => setRefresh(true)}
-                />
-              );
-            })
-          : null}
+        {!add ? (
+          members.map((item, index) => {
+            return (
+              <Member
+                key={index}
+                perm={props.data.perm}
+                data={item}
+                subs={subs}
+                movies={movies}
+                refresh={() => setRefresh(true)}
+              />
+            );
+          })
+        ) : (
+          <AddMember
+            refresh={() => {
+              setAdd(false);
+              setRefresh(true);
+            }}
+          />
+        )}
       </div>
     </>
   );

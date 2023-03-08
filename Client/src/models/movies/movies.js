@@ -1,7 +1,8 @@
+import AddMovie from "./addMovie";
 import { apiCalls, useSessionCheck } from "../other/functions";
 import { Button } from "../other/main";
 import { useEffect, useRef, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Movies(props) {
   const { sessionCheck } = useSessionCheck();
@@ -14,6 +15,22 @@ export default function Movies(props) {
   const [refresh, setRefresh] = useState(false);
   const serachRef = useRef(null);
 
+  useEffect(() => {
+    setLoading(true);
+    getAllData();
+  }, []);
+
+  useEffect(() => {
+    sessionCheck(props.data);
+  }, [add]);
+
+  useEffect(() => {
+    if (refresh) {
+      serachRef.current.value = "";
+      getAllData();
+    }
+  }, [refresh]);
+
   const getAllData = async () => {
     const resp = await apiCalls("get", "");
     setMovies(resp[0]);
@@ -22,19 +39,6 @@ export default function Movies(props) {
     setLoading(false);
     setRefresh(false);
   };
-
-  useEffect(() => {
-    setLoading(true);
-    sessionCheck(props.data);
-    getAllData();
-  }, []);
-
-  useEffect(() => {
-    if (refresh) {
-      serachRef.current.value = "";
-      getAllData();
-    }
-  }, [refresh]);
 
   const find = async () => {
     if (search !== "") {
@@ -76,8 +80,6 @@ export default function Movies(props) {
         ) : null}
       </div>
 
-      <Outlet />
-
       {!add ? (
         <div
           style={{
@@ -100,20 +102,27 @@ export default function Movies(props) {
       {loading ? <h3 style={{ textAlign: "center" }}>Loading...</h3> : null}
 
       <div className="flex-wrap">
-        {!add
-          ? movies.map((item, index) => {
-              return (
-                <Movie
-                  key={index}
-                  perm={props.data.perm}
-                  data={item}
-                  subs={subs}
-                  members={members}
-                  refresh={() => setRefresh(true)}
-                />
-              );
-            })
-          : null}
+        {!add ? (
+          movies.map((item, index) => {
+            return (
+              <Movie
+                key={index}
+                perm={props.data.perm}
+                data={item}
+                subs={subs}
+                members={members}
+                refresh={() => setRefresh(true)}
+              />
+            );
+          })
+        ) : (
+          <AddMovie
+            refresh={() => {
+              setAdd(false);
+              setRefresh(true);
+            }}
+          />
+        )}
       </div>
     </>
   );

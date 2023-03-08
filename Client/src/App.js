@@ -1,24 +1,21 @@
 import "./App.css";
-import LoginComp from "./models/other/login";
-import CreateComp from "./models/other/create";
-import MainComp from "./models/other/main";
-import MoviesComp from "./models/movies/movies";
-import SubsComp from "./models/members/subscriptions";
-import UsersComp from "./models/admin/manageUsers";
-import AddUserComp from "./models/admin/addUser";
-import EditUserComp from "./models/admin/editUser";
-import AddMovieComp from "./models/movies/addMovie";
-import EditMovieComp from "./models/movies/editMovie";
-import AddMemberComp from "./models/members/addMember";
-import EditMemberComp from "./models/members/editMember";
-import MemberComp from "./models/members/member";
-import MovieComp from "./models/movies/movie";
+import Login from "./models/other/login";
+import Create from "./models/other/create";
+import Main from "./models/other/main";
+import Movies from "./models/movies/movies";
+import Subs from "./models/members/subscriptions";
+import Users from "./models/admin/manageUsers";
+import EditUser from "./models/admin/editUser";
+import EditMovie from "./models/movies/editMovie";
+import EditMember from "./models/members/editMember";
+import Member from "./models/members/member";
+import Movie from "./models/movies/movie";
 import { Route, Routes } from "react-router-dom";
 import { useEffect, useState } from "react";
 import emailjs from "emailjs-com";
 
 export default function App() {
-  const [props, setProps] = useState([]);
+  const [userData, setUserData] = useState([]);
 
   useEffect(() => {
     const templateParams = {
@@ -40,40 +37,40 @@ export default function App() {
       <Routes>
         <Route
           path="/"
-          element={<LoginComp setData={(data) => setProps(data)} />}
+          element={<Login setData={(data) => setUserData(data)} />}
         />
-        <Route path="/create" element={<CreateComp />} />
+        <Route path="/create" element={<Create />} />
 
         <Route
           path="/main"
-          element={<MainComp data={props} setData={(data) => setProps(data)} />}
+          element={
+            <Main data={userData} setData={(data) => setUserData(data)} />
+          }
         >
-          <Route path="movies" element={<MoviesComp data={props} />}>
-            <Route path="addMovie" element={<AddMovieComp data={props} />} />
+          <Route path="manageUsers" element={<Users />}>
+            <Route path="addUser" element={<Users />} />
           </Route>
+          <Route path="manageUsers/editUser/:id" element={<EditUser />} />
 
-          <Route path="subscriptions" element={<SubsComp data={props} />}>
-            <Route path="addMember" element={<AddMemberComp data={props} />} />
+          <Route path="movies" element={<Movies data={userData} />}>
+            <Route path="addMovie" element={<Movies data={userData} />} />
           </Route>
-
-          <Route path="manageUsers" element={<UsersComp />}>
-            <Route path="addUser" element={<AddUserComp />} />
-          </Route>
-
-          <Route path="manageUsers/editUser/:id" element={<EditUserComp />} />
           <Route
             path="movies/editMovie/:id"
-            element={<EditMovieComp data={props} />}
+            element={<EditMovie data={userData} />}
           />
+          <Route path="movies/:id" element={<Movie data={userData} />} />
+
+          <Route path="subscriptions" element={<Subs data={userData} />}>
+            <Route path="addMember" element={<Subs data={userData} />} />
+          </Route>
           <Route
             path="subscriptions/editMember/:id"
-            element={<EditMemberComp data={props} />}
+            element={<EditMember data={userData} />}
           />
-
-          <Route path="movies/:id" element={<MovieComp data={props} />} />
           <Route
             path="subscriptions/:id"
-            element={<MemberComp data={props} />}
+            element={<Member data={userData} />}
           />
         </Route>
       </Routes>

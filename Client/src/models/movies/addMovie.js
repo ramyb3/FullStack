@@ -1,11 +1,10 @@
-import { apiCalls, useSessionCheck } from "../other/functions";
+import { apiCalls } from "../other/functions";
 import { Button } from "../other/main";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function AddMovie(props) {
   const navigate = useNavigate();
-  const { sessionCheck } = useSessionCheck();
   const [loading, setLoading] = useState(false);
   const [movie, setMovie] = useState({
     name: "",
@@ -14,15 +13,15 @@ export default function AddMovie(props) {
     date: "",
   });
 
-  useEffect(() => {
-    sessionCheck(props.data);
-  }, []);
-
   const addMovie = async () => {
     if (movie.name !== "" && movie.genres.length > 0 && movie.date !== "") {
       setLoading(true);
       await apiCalls("post", "addMovie", movie);
-      navigate("/main/movies");
+      props.refresh();
+
+      setTimeout(() => {
+        navigate("");
+      }, 5000);
     } else {
       alert("YOU MUST FILL ALL THE FORM!!");
     }
@@ -103,7 +102,7 @@ export default function AddMovie(props) {
       </span>
       <div style={{ display: "flex", gap: "10px" }}>
         <button onClick={addMovie}>Save</button>
-        <Button link="/main/movies" text="Cancel" />
+        <Button link="" text="Cancel" onClick={props.refresh} />
       </div>
       {loading ? <h3>Loading...</h3> : null}
     </div>

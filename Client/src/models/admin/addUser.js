@@ -3,7 +3,7 @@ import { Button } from "../other/main";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-export default function AddUser() {
+export default function AddUser(props) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [VS, setVS] = useState(false);
@@ -52,7 +52,8 @@ export default function AddUser() {
 
       const obj = { ...user, VS, VM };
       await apiCalls("post", "addUser", obj);
-      navigate("/main/manageUsers");
+      navigate("");
+      props.setAdd();
     } else {
       alert("YOU MUST FILL ALL THE FORM!!");
     }
@@ -169,7 +170,7 @@ export default function AddUser() {
 
       <div style={{ display: "flex", gap: "10px" }}>
         <button onClick={addUser}>Save</button>
-        <Button link="/main/manageUsers" text="Cancel" />
+        <Button link="" text="Cancel" onClick={props.setAdd} />
       </div>
       {loading ? <h3>Loading...</h3> : null}
     </div>

@@ -1,10 +1,38 @@
-import { apiCalls } from "../other/functions";
+import { useFunctions } from "../other/functions";
 import { Button } from "../other/main";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
+export const genres = [
+  "Action",
+  "Adventure",
+  "Anime",
+  "Comedy",
+  "Crime",
+  "Drama",
+  "Espionage",
+  "Family",
+  "Fantasy",
+  "History",
+  "Horror",
+  "Legal",
+  "Medical",
+  "Music",
+  "Mystery",
+  "Romance",
+  "Science-Fiction",
+  "Sports",
+  "Supernatural",
+  "Thriller",
+  "War",
+  "Western",
+];
+
+export const checkGenres = (e) => {
+  return Array.from(e.target.selectedOptions, (option) => option.value);
+};
+
 export default function AddMovie(props) {
-  const navigate = useNavigate();
+  const { movieReq } = useFunctions();
   const [loading, setLoading] = useState(false);
   const [movie, setMovie] = useState({
     name: "",
@@ -12,53 +40,6 @@ export default function AddMovie(props) {
     image: "",
     date: "",
   });
-
-  const addMovie = async () => {
-    if (movie.name !== "" && movie.genres.length > 0 && movie.date !== "") {
-      setLoading(true);
-      await apiCalls("post", "addMovie", movie);
-      props.refresh();
-
-      setTimeout(() => {
-        navigate("");
-      }, 5000);
-    } else {
-      alert("YOU MUST FILL ALL THE FORM!!");
-    }
-  };
-
-  const checkGenres = (e) => {
-    const genres = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setMovie({ ...movie, genres });
-  };
-
-  const genres = [
-    "Action",
-    "Adventure",
-    "Anime",
-    "Comedy",
-    "Crime",
-    "Drama",
-    "Espionage",
-    "Family",
-    "Fantasy",
-    "History",
-    "Horror",
-    "Legal",
-    "Medical",
-    "Music",
-    "Mystery",
-    "Romance",
-    "Science-Fiction",
-    "Sports",
-    "Supernatural",
-    "Thriller",
-    "War",
-    "Western",
-  ];
 
   return (
     <div className="box flex-column" style={{ gap: "10px" }}>
@@ -72,7 +53,7 @@ export default function AddMovie(props) {
       <select
         style={{ width: "200px", textAlign: "center", marginTop: "-8px" }}
         multiple="multiple"
-        onChange={(e) => checkGenres(e)}
+        onChange={(e) => setMovie({ ...movie, genres: checkGenres(e) })}
       >
         {genres.map((genre, index) => {
           return (
@@ -101,7 +82,11 @@ export default function AddMovie(props) {
         />
       </span>
       <div style={{ display: "flex", gap: "10px" }}>
-        <button onClick={addMovie}>Save</button>
+        <button
+          onClick={() => movieReq("", movie, "add", props.refresh, setLoading)}
+        >
+          Save
+        </button>
         <Button link="" text="Cancel" onClick={props.refresh} />
       </div>
       {loading ? <h3>Loading...</h3> : null}

@@ -40,7 +40,7 @@ export default function Users() {
       <div className="flex-wrap" style={{ height: "250px" }}>
         {!add ? (
           users.map((item, index) => {
-            return <User key={index} func={deleteUser} data={item} />;
+            return <User key={index} deleteUser={deleteUser} data={item} />;
           })
         ) : (
           <AddUser setAdd={() => setAdd(false)} />
@@ -77,7 +77,7 @@ function User(props) {
           <button
             onClick={() => {
               setLoading(true);
-              props.func(props.data.id);
+              props.deleteUser(props.data.id);
             }}
           >
             Delete

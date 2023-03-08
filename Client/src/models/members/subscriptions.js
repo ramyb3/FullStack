@@ -1,11 +1,11 @@
 import AddMember from "./addMember";
 import { Button } from "../other/main";
-import { apiCalls, useSessionCheck } from "../other/functions";
+import { apiCalls, useFunctions } from "../other/functions";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function Subs(props) {
-  const { sessionCheck } = useSessionCheck();
+  const { sessionCheck } = useFunctions();
   const [movies, setMovies] = useState([]);
   const [members, setMembers] = useState([]);
   const [subs, setSubs] = useState([]);

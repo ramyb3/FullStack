@@ -1,11 +1,11 @@
-import { apiCalls, useSessionCheck } from "../other/functions";
+import { apiCalls, useFunctions } from "../other/functions";
 import { Button } from "../other/main";
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 export default function Member(props) {
   const params = useParams();
-  const { sessionCheck } = useSessionCheck();
+  const { sessionCheck } = useFunctions();
   const [subMovies, setSubs] = useState([]);
   const [movies, setMovies] = useState([]);
   const [list, setList] = useState([]);

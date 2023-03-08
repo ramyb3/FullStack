@@ -1,10 +1,31 @@
-import { apiCalls } from "../other/functions";
+import { useFunctions } from "../other/functions";
 import { Button } from "../other/main";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
+export const inputs = [
+  {
+    text: "First Name",
+    onChange: "Fname",
+  },
+  {
+    text: "Last Name",
+    onChange: "Lname",
+  },
+  {
+    text: "User Name",
+    onChange: "Uname",
+  },
+  {
+    text: "Session Timeout- Minutes",
+    onChange: "session",
+    type: "number",
+    min: 1,
+    style: "50px",
+  },
+];
+
 export default function AddUser(props) {
-  const navigate = useNavigate();
+  const { userReq } = useFunctions();
   const [loading, setLoading] = useState(false);
   const [VS, setVS] = useState(false);
   const [VM, setVM] = useState(false);
@@ -39,24 +60,6 @@ export default function AddUser(props) {
   //check if 'View Movies' on
   const clearMovies = () => {
     setUser({ ...user, CM: false, UM: false, DM: false });
-  };
-
-  const addUser = async () => {
-    if (
-      user.Fname !== "" &&
-      user.Lname !== "" &&
-      user.Uname !== "" &&
-      user.session != 0
-    ) {
-      setLoading(true);
-
-      const obj = { ...user, VS, VM };
-      await apiCalls("post", "addUser", obj);
-      navigate("");
-      props.setAdd();
-    } else {
-      alert("YOU MUST FILL ALL THE FORM!!");
-    }
   };
 
   const checkboxes = [
@@ -110,27 +113,6 @@ export default function AddUser(props) {
     },
   ];
 
-  const inputs = [
-    {
-      placeholder: "First Name",
-      onChange: "Fname",
-    },
-    {
-      placeholder: "Last Name",
-      onChange: "Lname",
-    },
-    {
-      placeholder: "User Name",
-      onChange: "Uname",
-    },
-    {
-      placeholder: "Session Timeout- Minutes",
-      onChange: "session",
-      type: "number",
-      min: 1,
-    },
-  ];
-
   return (
     <div className="box flex-column" style={{ gap: "10px" }}>
       <h2>Add User Page</h2>
@@ -143,7 +125,7 @@ export default function AddUser(props) {
             onChange={(e) =>
               setUser({ ...user, [input.onChange]: e.target.value })
             }
-            placeholder={input.placeholder}
+            placeholder={input.text}
             min={input.min}
           />
         );
@@ -169,7 +151,13 @@ export default function AddUser(props) {
       })}
 
       <div style={{ display: "flex", gap: "10px" }}>
-        <button onClick={addUser}>Save</button>
+        <button
+          onClick={() =>
+            userReq("", user, "add", props.setAdd, setLoading, [VS, VM])
+          }
+        >
+          Save
+        </button>
         <Button link="" text="Cancel" onClick={props.setAdd} />
       </div>
       {loading ? <h3>Loading...</h3> : null}

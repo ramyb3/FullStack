@@ -1,10 +1,11 @@
-import { apiCalls } from "../other/functions";
+import { inputs } from "./addUser";
+import { apiCalls, useFunctions } from "../other/functions";
 import { Button } from "../other/main";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 export default function EditUser() {
-  const navigate = useNavigate();
+  const { userReq } = useFunctions();
   const params = useParams();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
@@ -69,47 +70,6 @@ export default function EditUser() {
 
     setPerm(arr);
   };
-
-  const updateUser = async () => {
-    if (
-      user.Fname !== "" &&
-      user.Lname !== "" &&
-      user.Uname !== "" &&
-      user.session != 0
-    ) {
-      setLoading(true);
-
-      let obj = user;
-      obj = { ...obj, perm };
-
-      await apiCalls("post", "updateUser", obj);
-      navigate("/main/manageUsers");
-    } else {
-      alert("YOU MUST FILL ALL THE FORM!!");
-    }
-  };
-
-  const inputs = [
-    {
-      text: "First Name",
-      onChange: "Fname",
-    },
-    {
-      text: "Last Name",
-      onChange: "Lname",
-    },
-    {
-      text: "User Name",
-      onChange: "Uname",
-    },
-    {
-      text: "Session Timeout (Minutes)",
-      onChange: "session",
-      type: "number",
-      min: 1,
-      style: "50px",
-    },
-  ];
 
   const checkboxes = [
     {
@@ -190,7 +150,20 @@ export default function EditUser() {
         })}
 
         <div style={{ display: "flex", gap: "10px", paddingTop: "15px" }}>
-          <button onClick={updateUser}>Update</button>
+          <button
+            onClick={() =>
+              userReq(
+                "/main/manageUsers",
+                user,
+                "update",
+                () => {},
+                setLoading,
+                perm
+              )
+            }
+          >
+            Update
+          </button>
           <Button link="/main/manageUsers" text="Cancel" />
         </div>
 

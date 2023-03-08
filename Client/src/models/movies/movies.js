@@ -1,11 +1,11 @@
 import AddMovie from "./addMovie";
-import { apiCalls, useSessionCheck } from "../other/functions";
+import { apiCalls, useFunctions } from "../other/functions";
 import { Button } from "../other/main";
 import { useEffect, useRef, useState } from "react";
 import Movie from "./movie";
 
 export default function Movies(props) {
-  const { sessionCheck } = useSessionCheck();
+  const { sessionCheck } = useFunctions();
   const [movies, setMovies] = useState([]);
   const [members, setMembers] = useState([]);
   const [subs, setSubs] = useState([]);

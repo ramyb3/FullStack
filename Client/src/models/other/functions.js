@@ -11,7 +11,7 @@ export async function apiCalls(method, url, data) {
   return resp.data;
 }
 
-export function useSessionCheck() {
+export function useFunctions() {
   const navigate = useNavigate();
 
   const sessionCheck = (data) => {
@@ -23,5 +23,54 @@ export function useSessionCheck() {
     }
   };
 
-  return { sessionCheck };
+  const movieReq = async (link, movie, method, refresh, setLoading) => {
+    if (movie.name !== "" && movie.genres.length > 0 && movie.date !== "") {
+      setLoading(true);
+      await apiCalls("post", `${method}Movie`, movie);
+      refresh();
+
+      setTimeout(() => {
+        navigate(link);
+      }, 5000);
+    } else {
+      alert("YOU MUST FILL ALL THE FORM!!");
+    }
+  };
+
+  const memberReq = async (link, member, method, refresh, setLoading) => {
+    if (member.name !== "" && member.email !== "" && member.city !== "") {
+      setLoading(true);
+      await apiCalls("post", `${method}Member`, member);
+      refresh();
+
+      setTimeout(() => {
+        navigate(link);
+      }, 5000);
+    } else {
+      alert("YOU MUST FILL ALL THE FORM!!");
+    }
+  };
+
+  const userReq = async (link, user, method, setAdd, setLoading, data) => {
+    if (
+      user.Fname !== "" &&
+      user.Lname !== "" &&
+      user.Uname !== "" &&
+      user.session != 0
+    ) {
+      setLoading(true);
+
+      const obj = {
+        ...user,
+        ...(link === "" ? { VS: data[0], VM: data[1] } : { perm: data }),
+      };
+      await apiCalls("post", `${method}User`, obj);
+      setAdd();
+      navigate(link);
+    } else {
+      alert("YOU MUST FILL ALL THE FORM!!");
+    }
+  };
+
+  return { sessionCheck, movieReq, memberReq, userReq };
 }

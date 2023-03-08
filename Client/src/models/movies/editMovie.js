@@ -1,11 +1,12 @@
 import { Button } from "../other/main";
-import { apiCalls, useSessionCheck } from "../other/functions";
+import { genres, checkGenres } from "./addMovie";
+import { apiCalls, useFunctions } from "../other/functions";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 export default function EditMovie(props) {
-  const navigate = useNavigate();
-  const { sessionCheck } = useSessionCheck();
+  const { movieReq } = useFunctions();
+  const { sessionCheck } = useFunctions();
   const params = useParams();
   const [loading, setLoading] = useState(false);
   const [movie, setMovie] = useState({
@@ -36,49 +37,6 @@ export default function EditMovie(props) {
     getMovie();
   }, []);
 
-  const updateMovie = async () => {
-    if (movie.name !== "" && movie.genres.length > 0 && movie.date !== "") {
-      setLoading(true);
-      await apiCalls("post", "updateMovie", movie);
-      navigate("/main/movies");
-    } else {
-      alert("YOU MUST FILL ALL THE FORM!!");
-    }
-  };
-
-  const checkGenres = (e) => {
-    const genres = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setMovie({ ...movie, genres });
-  };
-
-  const genres = [
-    "Action",
-    "Adventure",
-    "Anime",
-    "Comedy",
-    "Crime",
-    "Drama",
-    "Espionage",
-    "Family",
-    "Fantasy",
-    "History",
-    "Horror",
-    "Legal",
-    "Medical",
-    "Music",
-    "Mystery",
-    "Romance",
-    "Science-Fiction",
-    "Sports",
-    "Supernatural",
-    "Thriller",
-    "War",
-    "Western",
-  ];
-
   return (
     <div style={{ textAlign: "center" }}>
       <h2>Edit Movie Page</h2>
@@ -97,7 +55,7 @@ export default function EditMovie(props) {
         <select
           style={{ width: "200px", textAlign: "center", marginTop: "-8px" }}
           multiple="multiple"
-          onChange={(e) => checkGenres(e)}
+          onChange={(e) => setMovie({ ...movie, genres: checkGenres(e) })}
         >
           {genres.map((genre, index) => {
             return (
@@ -124,7 +82,13 @@ export default function EditMovie(props) {
           onChange={(e) => setMovie({ ...movie, date: e.target.value })}
         />
         <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={updateMovie}>Update</button>
+          <button
+            onClick={() =>
+              movieReq("/main/movies", movie, "update", () => {}, setLoading)
+            }
+          >
+            Update
+          </button>
           <Button link="/main/movies" text="Cancel" />
         </div>
         {loading ? <h3>Loading...</h3> : null}

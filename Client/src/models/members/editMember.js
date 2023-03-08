@@ -1,11 +1,12 @@
-import { apiCalls, useSessionCheck } from "../other/functions";
+import { inputs } from "./addMember";
+import { apiCalls, useFunctions } from "../other/functions";
 import { Button } from "../other/main";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 export default function EditMember(props) {
-  const navigate = useNavigate();
-  const { sessionCheck } = useSessionCheck();
+  const { memberReq } = useFunctions();
+  const { sessionCheck } = useFunctions();
   const params = useParams();
   const [loading, setLoading] = useState(false);
   const [member, setMember] = useState({
@@ -34,29 +35,6 @@ export default function EditMember(props) {
     getMember();
   }, []);
 
-  const updateMember = async () => {
-    if (member.name !== "" && member.email !== "" && member.city !== "") {
-      setLoading(true);
-      await apiCalls("post", "updateMember", member);
-      navigate("/main/subscriptions");
-    } else {
-      alert("YOU MUST FILL ALL THE FORM!!");
-    }
-  };
-
-  const inputs = [
-    {
-      text: "name",
-    },
-    {
-      text: "email",
-      type: "email",
-    },
-    {
-      text: "city",
-    },
-  ];
-
   return (
     <div style={{ textAlign: "center" }}>
       <h2>Edit Member Page</h2>
@@ -81,7 +59,19 @@ export default function EditMember(props) {
         })}
 
         <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={updateMember}>Update</button>
+          <button
+            onClick={() =>
+              memberReq(
+                "/main/subscriptions",
+                member,
+                "update",
+                () => {},
+                setLoading
+              )
+            }
+          >
+            Update
+          </button>
           <Button link="/main/subscriptions" text="Cancel" />
         </div>
         {loading ? <h3>Loading...</h3> : null}

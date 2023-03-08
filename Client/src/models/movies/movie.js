@@ -1,4 +1,4 @@
-import { apiCalls, useSessionCheck } from "../other/functions";
+import { apiCalls, useFunctions } from "../other/functions";
 import { Button } from "../other/main";
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
@@ -6,7 +6,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 export default function Movie(props) {
   const params = useParams();
   const navigate = useNavigate();
-  const { sessionCheck } = useSessionCheck();
+  const { sessionCheck } = useFunctions();
   const [subs, setSubs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);

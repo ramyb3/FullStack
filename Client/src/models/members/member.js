@@ -1,16 +1,17 @@
 import { apiCalls, useFunctions } from "../other/functions";
 import { Button } from "../other/main";
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function Member(props) {
   const params = useParams();
+  // const navigate = useNavigate();
   const { sessionCheck } = useFunctions();
-  const [subMovies, setSubs] = useState([]);
+  const [subs, setSubs] = useState([]);
   const [movies, setMovies] = useState([]);
-  const [list, setList] = useState([]);
+  // const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [refresh, setRefresh] = useState(false);
+  // const [refresh, setRefresh] = useState(false);
   const [member, setMember] = useState({
     id: 0,
     city: "",
@@ -18,34 +19,48 @@ export default function Member(props) {
     name: "",
   });
 
-  const getSubs = async () => {
-    const resp = await apiCalls("get", `subscriptions/${params.id}`);
+  // useEffect(() => {
+  //   if (refresh) {
+  //     getSubs();
+  //   }
+  // }, [refresh]);
 
-    setList(resp[3]);
-    setMovies(resp[2]);
-    setSubs(resp[0]);
+  useEffect(() => {
+    if (!props.item) {
+      sessionCheck(props.data);
+    }
+
+    setLoading(true);
+    getSubs();
+  }, [props]);
+
+  const getSubs = async () => {
+    let resp;
+
+    if (!props.item) {
+      resp = await apiCalls("get", `subscriptions/${params.id}`);
+    } else {
+      resp =
+        props.subs.find((data) => data.MemberId === props.item._id)?.Movies ||
+        [];
+    }
+
+    const obj = props.item ? props.item : resp[1];
+
+    setMovies(props.item ? props.movies : resp[2]);
+    setSubs(props.item ? resp : resp[0]);
     setMember({
-      id: resp[1]._id,
-      city: resp[1].City,
-      email: resp[1].Email,
-      name: resp[1].Name,
+      id: obj._id,
+      city: obj.City,
+      email: obj.Email,
+      name: obj.Name,
     });
 
+    // setList(resp[3]);
+
     setLoading(false);
-    setRefresh(false);
+    // setRefresh(false);
   };
-
-  useEffect(() => {
-    setLoading(true);
-    sessionCheck(props.data);
-    getSubs();
-  }, []);
-
-  useEffect(() => {
-    if (refresh) {
-      getSubs();
-    }
-  }, [refresh]);
 
   const deleteMember = async () => {
     await apiCalls("delete", `deleteMember/${member.id}`);
@@ -69,24 +84,20 @@ export default function Member(props) {
                 text="Edit"
               />
             ) : null}
-
             {props.data.perm.includes("Delete Subscriptions") ? (
-              <Button
-                link="/main/subscriptions"
-                text="Delete"
-                onClick={deleteMember}
-              />
+              <button onClick={deleteMember}>Delete</button>
             ) : null}
           </div>
+
           <div className="box2" style={{ height: "18em" }}>
             <b>
-              {subMovies.length > 0
+              {subs.length > 0
                 ? "The Movies This Member Watched:"
                 : "This Member Didn't Watched Any Movie!!"}
             </b>
 
             <ul className="overflow">
-              {subMovies.map((i, index1) => {
+              {subs.map((i, index1) => {
                 return (
                   <li key={index1}>
                     {movies.map((j, index2) => {
@@ -115,11 +126,11 @@ export default function Member(props) {
               })}
             </ul>
 
-            <NewSubscription
+            {/* <NewSubscription
               id={member.id}
               list={list}
               refresh={() => setRefresh(true)}
-            />
+            /> */}
           </div>
         </div>
       )}

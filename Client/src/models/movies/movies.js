@@ -1,8 +1,8 @@
+import Movie from "./movie";
 import AddMovie from "./addMovie";
 import { apiCalls, useFunctions } from "../other/functions";
 import { Button } from "../other/main";
 import { useEffect, useRef, useState } from "react";
-import Movie from "./movie";
 
 export default function Movies(props) {
   const { sessionCheck } = useFunctions();

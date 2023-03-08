@@ -35,17 +35,12 @@ export default function App() {
       <h1>Movies - Subscriptions Web Site</h1>
 
       <Routes>
-        <Route
-          path="/"
-          element={<Login setData={(data) => setUserData(data)} />}
-        />
+        <Route path="/" element={<Login setData={setUserData} />} />
         <Route path="/create" element={<Create />} />
 
         <Route
           path="/main"
-          element={
-            <Main data={userData} setData={(data) => setUserData(data)} />
-          }
+          element={<Main data={userData} setData={setUserData} />}
         >
           <Route path="manageUsers" element={<Users />}>
             <Route path="addUser" element={<Users />} />

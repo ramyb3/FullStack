@@ -7,7 +7,7 @@ You will be able to add/edit/delete movies and members depend on the user permis
 there are 3 repositories here: 2 for backend and 1 for frontend.
 
 1. clone this project
-2. create mongodb collection with the name subscriptionsDB and copy the url
+2. create mongodb DB with the name subscriptionsDB and copy the url
 3. create 2 .env files (in '/Data' & in '/WebServices') with WEB_SERVICE_MONGO_URL = `<'YOUR_URL'>`
 4. write in .env file that in '/Data' SUBSCRIPTION_API_URL = http://localhost:8000/subscriptions
 5. create .env file in '/Client' with REACT_APP_API_SERVER = http://localhost:7000/data

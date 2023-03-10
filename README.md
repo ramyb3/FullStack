@@ -14,4 +14,5 @@ there are 3 repositories here: 2 for backend and 1 for frontend.
 6. open 3 terminals (one for each repo) and run `npm i`
 7. go to '/WebServices' terminal and run `npm start`
 8. go to '/Data' terminal and run `npm start`
-9. go to '/Client' terminal and run `npm start`
+9. inside users collection insert document: { \_id: 0, UserName: "admin", Password: "a"}
+10. go to '/Client' terminal and run `npm start`

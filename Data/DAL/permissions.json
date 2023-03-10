@@ -11,18 +11,5 @@
       "Update Movies",
       "Delete Movies"
     ]
-  },
-  {
-    "id": 1,
-    "permissions": [
-      "View Subscriptions",
-      "Create Subscriptions",
-      "Update Subscriptions",
-      "Delete Subscriptions",
-      "View Movies",
-      "Create Movies",
-      "Update Movies",
-      "Delete Movies"
-    ]
   }
 ]

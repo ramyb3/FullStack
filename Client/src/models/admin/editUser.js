@@ -41,7 +41,6 @@ export default function EditUser() {
     editUser();
   }, []);
 
-  //check if main checkbox off
   const checkClicks = (e, label) => {
     const string = label.includes("Movies") ? "Movies" : "Subscriptions";
 
@@ -57,7 +56,6 @@ export default function EditUser() {
     }
   };
 
-  //check if main checkbox on
   const clearCheckboxes = (e, label) => {
     const string = label.includes("Movies") ? "Movies" : "Subscriptions";
     let arr;

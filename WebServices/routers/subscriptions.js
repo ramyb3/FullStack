@@ -68,22 +68,13 @@ router.route("/subscriptions").post(async function (req, resp) {
 
 //if want to delete subs from members/movies pages
 router.route("/subscriptions/:obj/:id").delete(async function (req, resp) {
-  let array;
-
   if (req.params.obj == 1) {
     // delete movies
-    array = await subsBL.deleteMoviesSubs(req.params.id);
+    await subsBL.deleteMoviesSubs(req.params.id);
   }
   if (req.params.obj == 2) {
     // delete members
-    array = await subsBL.deleteMembersSubs(req.params.id);
-  }
-
-  await subsBL.deleteAllSubs(); // delete all data from subs DB
-
-  // save new data to subs DB
-  for (let i = 0; i < array.length; i++) {
-    await subsBL.saveSub(array[i], 0);
+    await subsBL.deleteMembersSubs(req.params.id);
   }
 
   return resp.json(await returnData());

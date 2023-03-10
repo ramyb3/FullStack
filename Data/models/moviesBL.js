@@ -37,7 +37,7 @@ const search = async function (obj) {
   //check all letters
   for (let i = 0; i < names.length; i++) {
     if (names[i].toLowerCase().includes(obj.toLowerCase())) {
-      movies.push(resp[0][i]);
+      movies.push(resp[i]);
     }
   }
 

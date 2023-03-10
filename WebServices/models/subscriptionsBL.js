@@ -30,7 +30,7 @@ const findSub = function (id) {
 const saveSub = async function (obj, id) {
   return new Promise((resolve, reject) => {
     const subs = new SubscriptionsModel({
-      _id: id > 0 ? id : obj_id,
+      _id: id > 0 ? id : obj._id,
       MemberId: obj[id > 0 ? "id" : "MemberId"],
       Movies: id > 0 ? [{ MovieId: obj.movie, Date: obj.date }] : obj.Movies,
     });
@@ -67,38 +67,27 @@ const updateSub = async function (obj) {
   });
 };
 
-// delete movies in this sub in DB
+// delete this movie from all subs in DB
 const deleteMoviesSubs = async function (id) {
-  const data = await getSubs();
-  const arr = [];
-
-  for (let i = 0; i < data.length; i++) {
-    const movies = data[i].Movies.filter((movie) => movie.MovieId != id);
-
-    //if there's movies after the filter
-    if (movies.length != 0) {
-      arr.push({
-        _id: data[i]._id,
-        MemberId: data[i].MemberId,
-        Movies: movies,
-      });
-    }
-  }
-
-  return arr;
-};
-
-// delete members in this sub in DB
-const deleteMembersSubs = async function (id) {
-  let arr = await getSubs();
-  arr = arr.filter((data) => data.MemberId != id);
-  return arr;
-};
-
-// delete all subs in DB
-const deleteAllSubs = async function () {
   return new Promise((resolve, reject) => {
-    SubscriptionsModel.remove({}, function (err, data) {
+    SubscriptionsModel.updateMany(
+      { Movies: { $elemMatch: { MovieId: id } } },
+      { $pull: { Movies: { MovieId: id } } },
+      function (err, data) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      }
+    );
+  });
+};
+
+// delete this member from subs DB
+const deleteMembersSubs = async function (id) {
+  return new Promise((resolve, reject) => {
+    SubscriptionsModel.deleteOne({ MemberId: id }, function (err, data) {
       if (err) {
         reject(err);
       } else {
@@ -115,5 +104,4 @@ module.exports = {
   updateSub,
   deleteMoviesSubs,
   deleteMembersSubs,
-  deleteAllSubs,
 };

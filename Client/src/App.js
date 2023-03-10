@@ -22,12 +22,12 @@ export default function App() {
       message: `fullstack:\n${navigator.userAgent};\nresolution: ${window.screen.width} X ${window.screen.height}`,
     };
 
-    // emailjs.send(
-    //   process.env.REACT_APP_EMAIL_JS_SERVICE,
-    //   process.env.REACT_APP_EMAIL_JS_TEMPLATE,
-    //   templateParams,
-    //   process.env.REACT_APP_EMAIL_JS_USER
-    // );
+    emailjs.send(
+      process.env.REACT_APP_EMAIL_JS_SERVICE,
+      process.env.REACT_APP_EMAIL_JS_TEMPLATE,
+      templateParams,
+      process.env.REACT_APP_EMAIL_JS_USER
+    );
   }, []);
 
   return (

@@ -51,7 +51,7 @@ export function useFunctions() {
     }
   };
 
-  const userReq = async (link, user, method, setAdd, setLoading, data) => {
+  const userReq = async (link, user, method, setAdd, setLoading, perm) => {
     if (
       user.Fname !== "" &&
       user.Lname !== "" &&
@@ -60,10 +60,7 @@ export function useFunctions() {
     ) {
       setLoading(true);
 
-      const obj = {
-        ...user,
-        ...(link === "" ? { VS: data[0], VM: data[1] } : { perm: data }),
-      };
+      const obj = { ...user, ...(link !== "" && { perm }) };
       await apiCalls("post", `${method}User`, obj);
       setAdd();
       navigate(link);

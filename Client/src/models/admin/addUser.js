@@ -27,89 +27,89 @@ export const inputs = [
 export default function AddUser(props) {
   const { userReq } = useFunctions();
   const [loading, setLoading] = useState(false);
-  const [VS, setVS] = useState(false);
-  const [VM, setVM] = useState(false);
   const [user, setUser] = useState({
     Fname: "",
     Lname: "",
     Uname: "",
     session: 0,
+    VS: false,
     CS: false,
     US: false,
     DS: false,
+    VM: false,
     CM: false,
     UM: false,
     DM: false,
   });
 
-  //check if 'View Subscriptions' off
-  const checkSubs = () => {
-    setVS(true);
+  const checkClicks = (e, label) => {
+    let obj;
+
+    if (label.includes("S")) {
+      obj = "VS";
+    } else {
+      obj = "VM";
+    }
+
+    setUser({ ...user, [label]: e.target.checked, [obj]: true });
   };
 
-  //check if 'View Movies' off
-  const checkMovies = () => {
-    setVM(true);
-  };
-
-  //check if 'View Subscriptions' on
-  const clearSubs = () => {
-    setUser({ ...user, CS: false, US: false, DS: false });
-  };
-
-  //check if 'View Movies' on
-  const clearMovies = () => {
-    setUser({ ...user, CM: false, UM: false, DM: false });
+  const clearCheckboxes = (e, label) => {
+    if (label === "VS") {
+      if (!e.target.checked) {
+        setUser({ ...user, CS: false, US: false, DS: false, VS: false });
+      } else {
+        checkClicks(e, label);
+      }
+    } else {
+      if (!e.target.checked) {
+        setUser({ ...user, CM: false, UM: false, DM: false, VM: false });
+      } else {
+        checkClicks(e, label);
+      }
+    }
   };
 
   const checkboxes = [
     {
-      checked: VS,
-      onClick: clearSubs,
+      onClick: clearCheckboxes,
       text: "View Subscriptions",
-      onChange: setVS,
+      checked: "VS",
     },
     {
-      checked: user.CS,
-      onClick: checkSubs,
+      onClick: checkClicks,
       text: "Create Subscriptions",
-      onChange: "CS",
+      checked: "CS",
     },
     {
-      checked: user.US,
-      onClick: checkSubs,
+      onClick: checkClicks,
       text: "Update Subscriptions",
-      onChange: "US",
+      checked: "US",
     },
     {
-      checked: user.DS,
-      onClick: checkSubs,
+      onClick: checkClicks,
       text: "Delete Subscriptions",
-      onChange: "DS",
+      checked: "DS",
     },
     {
-      checked: VM,
-      onClick: clearMovies,
+      onClick: clearCheckboxes,
       text: "View Movies",
-      onChange: setVM,
+      checked: "VM",
     },
     {
-      checked: user.CM,
-      onClick: checkMovies,
+      onClick: checkClicks,
       text: "Create Movies",
-      onChange: "CM",
+      checked: "CM",
     },
     {
-      checked: user.UM,
-      onClick: checkMovies,
+      onClick: checkClicks,
       text: "Update Movies",
-      onChange: "UM",
+      checked: "UM",
     },
     {
-      checked: user.DM,
-      onClick: checkMovies,
+      onClick: checkClicks,
       text: "Delete Movies",
-      onChange: "DM",
+      checked: "DM",
     },
   ];
 
@@ -136,14 +136,9 @@ export default function AddUser(props) {
         return (
           <label key={index}>
             <input
-              checked={checkbox.checked}
+              checked={user[checkbox.checked]}
               type="checkbox"
-              onChange={(e) =>
-                typeof checkbox.onChange === "string"
-                  ? setUser({ ...user, [checkbox.onChange]: e.target.checked })
-                  : checkbox.onChange(e.target.checked)
-              }
-              onClick={checkbox.onClick}
+              onClick={(e) => checkbox.onClick(e, checkbox.checked)}
             />
             {checkbox.text}
           </label>
@@ -153,7 +148,7 @@ export default function AddUser(props) {
       <div style={{ display: "flex", gap: "10px" }}>
         <button
           onClick={() =>
-            userReq("", user, "add", props.setAdd, setLoading, [VS, VM])
+            userReq("", user, "add", props.setAdd, setLoading, null)
           }
         >
           Save

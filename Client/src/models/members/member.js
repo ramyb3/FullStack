@@ -5,28 +5,33 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function Member(props) {
   const params = useParams();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const { sessionCheck } = useFunctions();
   const [subs, setSubs] = useState([]);
   const [movies, setMovies] = useState([]);
-  // const [list, setList] = useState([]);
+  const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const [refresh, setRefresh] = useState(false);
+  const [loading2, setLoading2] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [member, setMember] = useState({
-    id: 0,
+    id: params.id ? params.id : props.item._id,
     city: "",
     email: "",
     name: "",
   });
 
-  // useEffect(() => {
-  //   if (refresh) {
-  //     getSubs();
-  //   }
-  // }, [refresh]);
+  useEffect(() => {
+    if (refresh) {
+      if (!params.id) {
+        props.refresh();
+      } else {
+        getSubs();
+      }
+    }
+  }, [refresh]);
 
   useEffect(() => {
-    if (!props.item) {
+    if (params.id) {
       sessionCheck(props.data);
     }
 
@@ -37,33 +42,49 @@ export default function Member(props) {
   const getSubs = async () => {
     let resp;
 
-    if (!props.item) {
+    if (params.id) {
       resp = await apiCalls("get", `subscriptions/${params.id}`);
     } else {
       resp =
         props.subs.find((data) => data.MemberId === props.item._id)?.Movies ||
         [];
+      const subList = props.movies.filter(
+        (movie) => !resp.filter((data) => data.MovieId === movie._id).length
+      );
+      resp = [resp, subList];
     }
 
-    const obj = props.item ? props.item : resp[1];
+    const obj = !params.id ? props.item : resp[1];
 
-    setMovies(props.item ? props.movies : resp[2]);
-    setSubs(props.item ? resp : resp[0]);
+    setMovies(!params.id ? props.movies : resp[2]);
+    setList(!params.id ? resp[1] : resp[3]);
+    setSubs(resp[0]);
     setMember({
-      id: obj._id,
+      ...member,
       city: obj.City,
       email: obj.Email,
       name: obj.Name,
     });
 
-    // setList(resp[3]);
-
     setLoading(false);
-    // setRefresh(false);
+    setRefresh(false);
   };
 
   const deleteMember = async () => {
+    setLoading2(true);
     await apiCalls("delete", `deleteMember/${member.id}`);
+
+    if (!params.id) {
+      props.refresh();
+    }
+
+    setTimeout(() => {
+      setLoading2(false);
+
+      if (params.id) {
+        navigate("/main/subscriptions");
+      }
+    }, 5000);
   };
 
   return (
@@ -74,64 +95,72 @@ export default function Member(props) {
         <div className="box1 flex-column">
           <h2>{member.name}</h2>
 
-          <span style={{ fontSize: "20px" }}>Email: {member.email}</span>
-          <span style={{ fontSize: "20px" }}>City: {member.city}</span>
+          {loading2 ? (
+            <h3>Loading...</h3>
+          ) : (
+            <>
+              <span style={{ fontSize: "20px" }}>Email: {member.email}</span>
+              <span style={{ fontSize: "20px" }}>City: {member.city}</span>
 
-          <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
-            {props.data.perm.includes("Update Subscriptions") ? (
-              <Button
-                link={`/main/subscriptions/editMember/${member.id}`}
-                text="Edit"
-              />
-            ) : null}
-            {props.data.perm.includes("Delete Subscriptions") ? (
-              <button onClick={deleteMember}>Delete</button>
-            ) : null}
-          </div>
+              <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
+                {props.data.perm.includes("Update Subscriptions") ? (
+                  <Button
+                    link={`/main/subscriptions/editMember/${member.id}`}
+                    text="Edit"
+                  />
+                ) : null}
+                {props.data.perm.includes("Delete Subscriptions") ? (
+                  <button onClick={deleteMember}>Delete</button>
+                ) : null}
+              </div>
 
-          <div className="box2" style={{ height: "18em" }}>
-            <b>
-              {subs.length > 0
-                ? "The Movies This Member Watched:"
-                : "This Member Didn't Watched Any Movie!!"}
-            </b>
+              {props.data.perm.includes("View Movies") ? (
+                <div className="box2" style={{ height: "18em" }}>
+                  <b>
+                    {subs.length > 0
+                      ? "The Movies This Member Watched:"
+                      : "This Member Didn't Watched Any Movie!!"}
+                  </b>
 
-            <ul className="overflow">
-              {subs.map((i, index1) => {
-                return (
-                  <li key={index1}>
-                    {movies.map((j, index2) => {
-                      return i.MovieId === j._id ? (
-                        <div
-                          key={index2}
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            marginLeft: "-30px",
-                            paddingRight: "5px",
-                          }}
-                        >
-                          <Link to={`/main/movies/${i.MovieId}`}>
-                            {j.Name.slice(0, 25)}
-                          </Link>
-                          <span>
-                            {i.Date.slice(8, 10)}/{i.Date.slice(5, 7)}/
-                            {i.Date.slice(0, 4)}
-                          </span>
-                        </div>
-                      ) : null;
+                  <ul className="overflow">
+                    {subs.map((sub, index1) => {
+                      return (
+                        <li key={index1}>
+                          {movies.map((movie, index2) => {
+                            return sub.MovieId === movie._id ? (
+                              <div
+                                key={index2}
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  marginLeft: "-30px",
+                                  paddingRight: "5px",
+                                }}
+                              >
+                                <Link to={`/main/movies/${sub.MovieId}`}>
+                                  {movie.Name.slice(0, 25)}
+                                </Link>
+                                <span>
+                                  {sub.Date.slice(8, 10)}/{sub.Date.slice(5, 7)}
+                                  /{sub.Date.slice(0, 4)}
+                                </span>
+                              </div>
+                            ) : null;
+                          })}
+                        </li>
+                      );
                     })}
-                  </li>
-                );
-              })}
-            </ul>
+                  </ul>
 
-            {/* <NewSubscription
-              id={member.id}
-              list={list}
-              refresh={() => setRefresh(true)}
-            /> */}
-          </div>
+                  <NewSubscription
+                    id={member.id}
+                    list={list}
+                    refresh={() => setRefresh(true)}
+                  />
+                </div>
+              ) : null}
+            </>
+          )}
         </div>
       )}
     </div>
@@ -155,7 +184,7 @@ function NewSubscription(props) {
       showOrHide();
       setLoading(true);
       await apiCalls("post", "addSubs", newSub);
-      await props.refresh();
+      props.refresh();
 
       setTimeout(() => {
         setLoading(false);

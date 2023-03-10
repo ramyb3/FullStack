@@ -57,15 +57,15 @@ function User(props) {
     <div className="box1 flex-column" style={{ width: "25em" }}>
       <Span text="Name" data={props.data.name} />
       <Span text="User Name" data={props.data.user} />
-      {props.data.user != "admin" ? (
+      {props.data.user !== "admin" ? (
         <Span text="Session Timeout (Minutes)" data={props.data.session} />
       ) : null}
       <Span text="Created Date" data={props.data.date} />
       <b style={{ paddingTop: "10px" }}>Permissions:</b>
       {props.data.perm.map((string, index) => {
-        return `${string}${index != props.data.perm.length - 1 ? ", " : ""}`;
+        return `${string}${index !== props.data.perm.length - 1 ? ", " : ""}`;
       })}
-      {props.data.user != "admin" ? (
+      {props.data.user !== "admin" ? (
         <div
           style={{
             display: "flex",

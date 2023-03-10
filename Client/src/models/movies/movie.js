@@ -19,7 +19,7 @@ export default function Movie(props) {
   });
 
   useEffect(() => {
-    if (!props.item) {
+    if (params.id) {
       sessionCheck(props.data);
     }
 
@@ -30,7 +30,7 @@ export default function Movie(props) {
   const getMovie = async () => {
     let resp = [];
 
-    if (!props.item) {
+    if (params.id) {
       resp = await apiCalls("get", `movies/${params.id}`);
     } else {
       for (let i = 0; i < props.subs.length; i++) {
@@ -54,7 +54,7 @@ export default function Movie(props) {
       }
     }
 
-    const obj = props.item ? props.item : resp[1];
+    const obj = !params.id ? props.item : resp[1];
 
     setMovie({
       id: obj._id,
@@ -64,7 +64,7 @@ export default function Movie(props) {
       date: obj.Premiered,
     });
 
-    setSubs(props.item ? resp : resp[0]);
+    setSubs(!params.id ? resp : resp[0]);
     setLoading(false);
   };
 
@@ -72,14 +72,14 @@ export default function Movie(props) {
     setLoading2(true);
     await apiCalls("delete", `deleteMovie/${movie.id}`);
 
-    if (props.item) {
+    if (!params.id) {
       props.refresh();
     }
 
     setTimeout(() => {
       setLoading2(false);
 
-      if (!props.item) {
+      if (params.id) {
         navigate("/main/movies");
       }
     }, 5000);
@@ -91,7 +91,7 @@ export default function Movie(props) {
         <h3>Loading...</h3>
       ) : (
         <div className="box1 flex-column">
-          <h2>{`${movie.name}, ${movie.date.slice(0, 4)}`}</h2>
+          <h2>{`${movie.name.slice(0, 25)}, ${movie.date.slice(0, 4)}`}</h2>
 
           {loading2 ? (
             <h3>Loading...</h3>
@@ -105,9 +105,7 @@ export default function Movie(props) {
                   }`;
                 })}
               </big>
-
-              <img src={movie.image} width="250px" height="300px" />
-
+              <img src={movie.image} />
               <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
                 {props.data.perm.includes("Update Movies") ? (
                   <Button
@@ -120,40 +118,44 @@ export default function Movie(props) {
                 ) : null}
               </div>
 
-              <div className="box2" style={{ height: "10em" }}>
-                <b>
-                  {subs.length > 0
-                    ? "The Members Who Watched This Movie:"
-                    : "No One Watched This Movie!!"}
-                </b>
+              {props.data.perm.includes("View Subscriptions") ? (
+                <div className="box2" style={{ height: "10em" }}>
+                  <b>
+                    {subs.length > 0
+                      ? "The Members Who Watched This Movie:"
+                      : "No One Watched This Movie!!"}
+                  </b>
 
-                <div className="overflow">
-                  {subs.map((sub, index) => {
-                    return (
-                      <ul key={index}>
-                        <li>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              marginLeft: "-30px",
-                              paddingRight: "5px",
-                            }}
-                          >
-                            <Link to={`/main/subscriptions/${sub.member._id}`}>
-                              {sub.member.Name}
-                            </Link>
-                            <span>
-                              {sub.date.slice(8, 10)}/{sub.date.slice(5, 7)}/
-                              {sub.date.slice(0, 4)}
-                            </span>
-                          </div>
-                        </li>
-                      </ul>
-                    );
-                  })}
+                  <div className="overflow">
+                    {subs.map((sub, index) => {
+                      return (
+                        <ul key={index}>
+                          <li>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                marginLeft: "-30px",
+                                paddingRight: "5px",
+                              }}
+                            >
+                              <Link
+                                to={`/main/subscriptions/${sub.member._id}`}
+                              >
+                                {sub.member.Name}
+                              </Link>
+                              <span>
+                                {sub.date.slice(8, 10)}/{sub.date.slice(5, 7)}/
+                                {sub.date.slice(0, 4)}
+                              </span>
+                            </div>
+                          </li>
+                        </ul>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              ) : null}
             </>
           )}
         </div>

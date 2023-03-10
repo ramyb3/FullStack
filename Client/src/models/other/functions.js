@@ -27,9 +27,9 @@ export function useFunctions() {
     if (movie.name !== "" && movie.genres.length > 0 && movie.date !== "") {
       setLoading(true);
       await apiCalls("post", `${method}Movie`, movie);
-      refresh();
 
       setTimeout(() => {
+        refresh();
         navigate(link);
       }, 5000);
     } else {
@@ -41,9 +41,9 @@ export function useFunctions() {
     if (member.name !== "" && member.email !== "" && member.city !== "") {
       setLoading(true);
       await apiCalls("post", `${method}Member`, member);
-      refresh();
 
       setTimeout(() => {
+        refresh();
         navigate(link);
       }, 5000);
     } else {

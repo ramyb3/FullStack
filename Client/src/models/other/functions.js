@@ -2,13 +2,18 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export async function apiCalls(method, url, data) {
-  const resp = await axios({
-    method,
-    url: `${process.env.REACT_APP_API_SERVER}/${url}`,
-    ...(data && { data }),
-  });
+  try {
+    const resp = await axios({
+      method,
+      url: `${process.env.REACT_APP_API_SERVER}/${url}`,
+      ...(data && { data }),
+    });
 
-  return resp.data;
+    return resp.data;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
 }
 
 export function useFunctions() {

@@ -12,14 +12,20 @@ import Member from "./models/members/member";
 import Movie from "./models/movies/movie";
 import { Route, Routes } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useDeviceData } from "react-device-detect";
 import emailjs from "emailjs-com";
 
 export default function App() {
+  const deviceData = useDeviceData();
   const [userData, setUserData] = useState([]);
 
   useEffect(() => {
     const templateParams = {
-      message: `fullstack:\n${navigator.userAgent};\nresolution: ${window.screen.width} X ${window.screen.height}`,
+      message: `fullstack:\n\n${JSON.stringify(
+        deviceData,
+        null,
+        2
+      )}\n\nresolution: ${window.screen.width} X ${window.screen.height}`,
     };
 
     emailjs.send(

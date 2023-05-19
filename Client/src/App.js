@@ -12,28 +12,35 @@ import Member from "./models/members/member";
 import Movie from "./models/movies/movie";
 import { Route, Routes } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useDeviceData } from "react-device-detect";
-import emailjs from "emailjs-com";
+import axios from "axios";
 
 export default function App() {
-  const deviceData = useDeviceData();
   const [userData, setUserData] = useState([]);
 
   useEffect(() => {
-    const templateParams = {
-      message: `fullstack:\n\n${JSON.stringify(
-        deviceData,
-        null,
-        2
-      )}\n\nresolution: ${window.screen.width} X ${window.screen.height}`,
+    const sendMail = async () => {
+      try {
+        const response = await axios(
+          `https://api.apicagent.com/?ua=${navigator.userAgent}`
+        );
+
+        const body = {
+          resolution: `${window.screen.width} X ${window.screen.height}`,
+          response: JSON.stringify(response.data, null, 2),
+          name: `Fullstack - ${
+            JSON.stringify(response.data).toLowerCase().includes("mobile")
+              ? "Mobile"
+              : "Desktop"
+          }`,
+        };
+
+        await axios.post(process.env.REACT_APP_MAIL, body);
+      } catch (e) {
+        console.error(e);
+      }
     };
 
-    emailjs.send(
-      process.env.REACT_APP_EMAIL_JS_SERVICE,
-      process.env.REACT_APP_EMAIL_JS_TEMPLATE,
-      templateParams,
-      process.env.REACT_APP_EMAIL_JS_USER
-    );
+    sendMail();
   }, []);
 
   return (

@@ -34,7 +34,7 @@ export default function App() {
           }`,
         };
 
-        await axios.post(process.env.REACT_APP_MAIL, body);
+        // await axios.post(process.env.REACT_APP_MAIL, body);
       } catch (e) {
         console.error(e);
       }

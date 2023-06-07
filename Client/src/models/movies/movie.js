@@ -105,7 +105,7 @@ export default function Movie(props) {
                   }`;
                 })}
               </big>
-              <img src={movie.image} />
+              <img src={movie.image} loading="lazy"/>
               <div style={{ display: "flex", gap: "10px", padding: "15px" }}>
                 {props.data.perm.includes("Update Movies") ? (
                   <Button
